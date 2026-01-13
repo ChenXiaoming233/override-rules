@@ -301,25 +301,31 @@ function buildDnsConfig({ mode, fakeIpFilter }) {
         "prefer-h3": true,
         "enhanced-mode": mode,
         "default-nameserver": [
-            "119.29.29.29",
-            "223.5.5.5"
+            "223.6.6.6",
+            "223.5.5.5",
+            "8.8.8.8",
+            "2400:3200::1",
+            "2001:4860:4860::8888"
         ],
         "nameserver": [
-            "system",
-            "223.5.5.5",
-            "119.29.29.29",
-            "180.184.1.1"
+            "https://1.1.1.1/dns-query",
+            "https://8.8.8.8/dns-query"
         ],
         "fallback": [
+            "https://1.1.1.1/dns-query",
+            "https://8.8.8.8/dns-query",
             "quic://dns0.eu",
-            "https://dns.cloudflare.com/dns-query",
-            "https://dns.sb/dns-query",
             "tcp://208.67.222.222",
             "tcp://8.26.56.2"
         ],
         "proxy-server-nameserver": [
-            "https://dns.alidns.com/dns-query",
+            "https://223.5.5.5/dns-query",
+            "https://223.6.6.6/dns-query",
             "tls://dot.pub"
+        ],
+        "direct-nameserver": [
+            "https://223.5.5.5/dns-query",
+            "https://223.6.6.6/dns-query"
         ]
     };
 
@@ -336,6 +342,7 @@ const dnsConfigFakeIp = buildDnsConfig({
     fakeIpFilter: [
         "geosite:private",
         "geosite:connectivity-check",
+        "geosite:category-ntp",
         "geosite:cn",
         "Mijia Cloud",
         "dig.io.mi.com",
