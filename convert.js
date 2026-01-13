@@ -466,7 +466,7 @@ function parseCountries(config) {
   return result; // [{ country: 'Japan', count: 12 }, ...]
 }
 
-function buildCountryProxyGroups({ countries, landing, loadBalance, config }) {
+function buildCountryProxyGroups({ countries, landing, loadBalance}) {
   const groups = [];
   const baseExcludeFilter = "0\\.[0-5]|低倍率|省流|大流量|实验性";
   const landingExcludeFilter =
@@ -478,12 +478,6 @@ function buildCountryProxyGroups({ countries, landing, loadBalance }) {
     const baseExcludeFilter = "0\\.[0-5]|低倍率|省流|大流量|实验性";
     const landingExcludeFilter = "(?i)家宽|家庭|家庭宽带|商宽|商业宽带|星链|Starlink|落地";
     const groupType = loadBalance ? "load-balance" : "url-test";
-
-    // 避免出现空的 compatible 节点，先检查该国家是否真的有节点
-    const nodesExist = (config.proxies || []).some((proxy) =>
-      new RegExp(meta.pattern.replace(/^\(\?i\)/, "")).test(proxy.name)
-    );
-    if (!nodesExist) continue; // 没有节点就跳过
 
     const groupConfig = {
       name: `${country}${NODE_SUFFIX}`,
