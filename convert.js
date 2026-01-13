@@ -314,14 +314,10 @@ function buildDnsConfig({ mode, fakeIpFilter }) {
         "fallback": [
             "https://1.1.1.1/dns-query",
             "https://8.8.8.8/dns-query",
-            "quic://dns0.eu",
-            "tcp://208.67.222.222",
-            "tcp://8.26.56.2"
         ],
         "proxy-server-nameserver": [
             "https://223.5.5.5/dns-query",
             "https://223.6.6.6/dns-query",
-            "tls://dot.pub"
         ],
         "direct-nameserver": [
             "https://223.5.5.5/dns-query",
@@ -342,14 +338,7 @@ const dnsConfigFakeIp = buildDnsConfig({
     fakeIpFilter: [
         "geosite:private",
         "geosite:connectivity-check",
-        "geosite:category-ntp",
-        "geosite:cn",
-        "Mijia Cloud",
-        "dig.io.mi.com",
-        "localhost.ptlogin2.qq.com",
-        "*.icloud.com",
-        "*.stun.*.*",
-        "*.stun.*.*.*"
+        "geosite:category-ntp"
     ]
 });
 
