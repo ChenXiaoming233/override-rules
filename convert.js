@@ -321,7 +321,7 @@ function buildDnsConfig({ mode, fakeIpFilter }) {
       "https://1.1.1.1/dns-query",
       "https://8.8.8.8/dns-query",
     ],
-    "direct-nameserver-follow-policy": "true",
+    "direct-nameserver-follow-policy": true,
     "direct-nameserver": [
       "https://223.5.5.5/dns-query",
       "https://223.6.6.6/dns-query",
