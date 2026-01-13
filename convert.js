@@ -308,17 +308,19 @@ function buildDnsConfig({ mode, fakeIpFilter }) {
     const config = {
         "enable": true,
         "listen": ":53",
-        "ipv6": ipv6Enabled,
-        "prefer-h3": true,
         "enhanced-mode": mode,
+        "fake-ip-range": "198.18.0.1/16",
+        "fake-ip-filter-mode": "blacklist",
+        "prefer-h3": true,
         "respect-rules": true,
+        "ipv6": ipv6Enabled,
         "default-nameserver": [
             "223.6.6.6",
             "223.5.5.5",
         ],
         "nameserver": [
             "https://1.1.1.1/dns-query",
-            "https://8.8.8.8/dns-query"
+            "https://8.8.8.8/dns-query",
         ],
         "proxy-server-nameserver": [
             "https://1.1.1.1/dns-query",
@@ -478,6 +480,12 @@ function buildCountryProxyGroups({ countries, landing, loadBalance }) {
         const meta = countriesMeta[country];
         if (!meta) continue;
 
+        // 避免出现空的 compatible 节点，先检查该国家是否真的有节点
+        const nodesExist = (config.proxies || []).some(proxy =>
+            new RegExp(meta.pattern.replace(/^\(\?i\)/, '')).test(proxy.name)
+        );
+        if (!nodesExist) continue;  // 没有节点就跳过
+
         const groupConfig = {
             "name": `${country}${NODE_SUFFIX}`,
             "icon": meta.icon,
@@ -516,6 +524,8 @@ function buildProxyGroups({
     const hasTW = countries.includes("台湾");
     const hasHK = countries.includes("香港");
     const hasUS = countries.includes("美国");
+    const hasSG = countries.includes("新加坡");
+    const hasJP = countries.includes("日本");
     // 排除落地节点、选择节点和故障转移以避免死循环
     const frontProxySelector = landing
         ? defaultSelector.filter(name => name !== PROXY_GROUPS.LANDING && name !== PROXY_GROUPS.FALLBACK)
@@ -553,8 +563,10 @@ function buildProxyGroups({
         {
             "name": "Telegram",
             "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
-            "type": "select",
-            "proxies": defaultProxies
+            "type": "url-test",
+            "interval": 60,
+            "tolerance": 50,
+            "proxies": (hasHK && hasJP && hasSG) ? ["香港节点", "新加坡节点", "日本节点"] : defaultProxiesDirect
         },
         {
             "name": "AI",
