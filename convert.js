@@ -212,11 +212,20 @@ const ruleProviders = {
         "interval": 86400,
         "url": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/ruleset/Crypto.list",
         "path": "./ruleset/Crypto.list"
-    }
+    },
+    "BanProgramAD": {
+      "url": "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list",
+      "path": "./ruleset/BanProgramAD.list",
+      "behavior": "classical",
+      "interval": 86400,
+      "format": "text",
+      "type": "http"
+    }s
 }
 
 const baseRules = [
     `RULE-SET,ADBlock,广告拦截`,
+    "RULE-SET,BanProgramAD,应用净化",
     `RULE-SET,AdditionalFilter,广告拦截`,
     `DOMAIN-SUFFIX,truthsocial.com,Truth Social`,
     `RULE-SET,StaticResources,静态资源`,
@@ -227,6 +236,9 @@ const baseRules = [
     `RULE-SET,SteamFix,${PROXY_GROUPS.DIRECT}`,
     `RULE-SET,GoogleFCM,${PROXY_GROUPS.DIRECT}`,
     `DOMAIN,services.googleapis.cn,${PROXY_GROUPS.SELECT}`,
+    "GEOSITE,STEAM,Game",
+    "GEOSITE,EPICGAMES,Game",
+    "GEOSITE,NINTENDO,Game",
     `GEOSITE,GOOGLE-PLAY@CN,${PROXY_GROUPS.DIRECT}`,
     "GEOSITE,ONEDRIVE,OneDrive",
     "GEOSITE,BING,Bing",
@@ -235,6 +247,7 @@ const baseRules = [
     "GEOSITE,TELEGRAM,Telegram",
     "GEOSITE,YOUTUBE,YouTube",
     "GEOSITE,GOOGLE,Google",
+    "GEOSITE,APPLE,Apple",
     "GEOSITE,NETFLIX,Netflix",
     "GEOSITE,SPOTIFY,Spotify",
     "GEOSITE,BILIBILI,Bilibili",
@@ -534,23 +547,13 @@ function buildProxyGroups({
             "include-all": true,
             "filter": "(?i)家宽|家庭|家庭宽带|商宽|商业宽带|星链|Starlink|落地",
         } : null,
-        {
-            "name": PROXY_GROUPS.FALLBACK,
-            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png",
-            "type": "fallback",
-            "url": "https://cp.cloudflare.com/generate_204",
-            "proxies": defaultFallback,
-            "interval": 180,
-            "tolerance": 20,
-            "lazy": false
-        },
-        {
-            "name": "静态资源",
-            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png",
-            "type": "select",
-            "proxies": defaultProxies,
-        },
         ...countryProxyGroups,
+        {
+            "name": "Telegram",
+            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
+            "type": "select",
+            "proxies": defaultProxies
+        },
         {
             "name": "AI",
             "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/chatgpt.png",
@@ -558,14 +561,14 @@ function buildProxyGroups({
             "proxies": defaultProxies
         },
         {
-            "name": "Crypto",
-            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency_3.png",
+            "name": "OneDrive",
+            "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/Onedrive.png",
             "type": "select",
             "proxies": defaultProxies
         },
         {
-            "name": "Google",
-            "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/Google.png",
+            "name": "Bing",
+            "icon": "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/bing.png",
             "type": "select",
             "proxies": defaultProxies
         },
@@ -578,6 +581,18 @@ function buildProxyGroups({
         {
             "name": "YouTube",
             "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
+            "type": "select",
+            "proxies": defaultProxies
+        },
+        {
+            "name": "Google",
+            "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/Google.png",
+            "type": "select",
+            "proxies": defaultProxies
+        },
+        {
+            "name": "Apple",
+            "icon": "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
             "type": "select",
             "proxies": defaultProxies
         },
@@ -606,8 +621,8 @@ function buildProxyGroups({
             "proxies": defaultProxies
         },
         {
-            "name": "Telegram",
-            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
+            "name": "Game",
+            "icon": "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
             "type": "select",
             "proxies": defaultProxies
         },
@@ -618,22 +633,32 @@ function buildProxyGroups({
             "proxies": (hasUS) ? ["美国节点", PROXY_GROUPS.SELECT, PROXY_GROUPS.MANUAL] : defaultProxies
         },
         {
-            "name": "OneDrive",
-            "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/Onedrive.png",
+            "name": "Crypto",
+            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency_3.png",
             "type": "select",
             "proxies": defaultProxies
         },
         {
-            "name": "Bing",
-            "icon": "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/bing.png",
+            "name": "静态资源",
+            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png",
             "type": "select",
-            "proxies": defaultProxies
+            "proxies": defaultProxies,
         },
         {
             "name": "SSH(22端口)",
             "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Server.png",
             "type": "select",
             "proxies": defaultProxies
+        },
+        {
+            "name": PROXY_GROUPS.FALLBACK,
+            "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png",
+            "type": "fallback",
+            "url": "https://cp.cloudflare.com/generate_204",
+            "proxies": defaultFallback,
+            "interval": 180,
+            "tolerance": 20,
+            "lazy": false
         },
         {
             "name": PROXY_GROUPS.DIRECT,
@@ -646,6 +671,14 @@ function buildProxyGroups({
         {
             "name": "广告拦截",
             "icon": "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
+            "type": "select",
+            "proxies": [
+                "REJECT", "REJECT-DROP",  PROXY_GROUPS.DIRECT
+            ]
+        },
+        {
+            "name": "应用净化",
+            "icon": "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png",
             "type": "select",
             "proxies": [
                 "REJECT", "REJECT-DROP",  PROXY_GROUPS.DIRECT
