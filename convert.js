@@ -41,6 +41,16 @@ function parseNumber(value, defaultValue = 0) {
  * 并将结果存入返回的对象中。
  */
 function buildFeatureFlags(args) {
+    // 定义 dns 配置参数默认值
+    const defaults = {
+        fakeip: true,
+        ipv6: false,
+        quic: false,
+        loadbalance: false,
+        landing: false,
+        keepalive: false,
+        full: false
+    };
     const spec = {
         loadbalance: "loadBalance",
         landing: "landing",
@@ -51,10 +61,10 @@ function buildFeatureFlags(args) {
         quic: "quicEnabled"
     };
 
-    const flags = Object.entries(spec).reduce((acc, [sourceKey, targetKey]) => {
-        acc[targetKey] = parseBool(args[sourceKey]) || false;
-        return acc;
-    }, {});
+    const flags = {};
+    for (const [src, dst] of Object.entries(spec)) {
+        flags[dst] = src in args ? parseBool(args[src]) : defaults[src];
+    }
 
     // 单独处理数字参数
     flags.countryThreshold = parseNumber(args.threshold, 0);
