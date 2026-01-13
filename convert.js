@@ -307,28 +307,24 @@ const snifferConfig = {
 function buildDnsConfig({ mode, fakeIpFilter }) {
     const config = {
         "enable": true,
+        "listen": ":53",
         "ipv6": ipv6Enabled,
         "prefer-h3": true,
         "enhanced-mode": mode,
+        "respect-rules": true,
         "default-nameserver": [
             "223.6.6.6",
             "223.5.5.5",
-            "8.8.8.8",
-            "2400:3200::1",
-            "2001:4860:4860::8888"
         ],
         "nameserver": [
             "https://1.1.1.1/dns-query",
             "https://8.8.8.8/dns-query"
         ],
-        "fallback": [
+        "proxy-server-nameserver": [
             "https://1.1.1.1/dns-query",
             "https://8.8.8.8/dns-query",
         ],
-        "proxy-server-nameserver": [
-            "https://223.5.5.5/dns-query",
-            "https://223.6.6.6/dns-query",
-        ],
+        "direct-nameserver-follow-policy": "true",
         "direct-nameserver": [
             "https://223.5.5.5/dns-query",
             "https://223.6.6.6/dns-query"
