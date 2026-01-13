@@ -550,7 +550,7 @@ function buildProxyGroups({
             "type": "select",
             "proxies": defaultProxies,
         },
-        ...countryProxyGroups
+        ...countryProxyGroups,
         {
             "name": "AI",
             "icon": "https://gcore.jsdelivr.net/gh/powerfullz/override-rules@master/icons/chatgpt.png",
