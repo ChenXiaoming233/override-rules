@@ -220,7 +220,7 @@ const ruleProviders = {
       "interval": 86400,
       "format": "text",
       "type": "http"
-    }s
+    }
 }
 
 const baseRules = [
