@@ -471,25 +471,31 @@ function buildCountryProxyGroups({ countries, landing, loadBalance }) {
   const baseExcludeFilter = "0\\.[0-5]|低倍率|省流|大流量|实验性";
   const landingExcludeFilter =
     "(?i)家宽|家庭|家庭宽带|商宽|商业宽带|星链|Starlink|落地";
-  const groupType = loadBalance ? "load-balance" : "url-test";
+
+  const excludeFilter = landing
+    ? `${landingExcludeFilter}|${baseExcludeFilter}`
+    : baseExcludeFilter;
+
+  const testGroupType = loadBalance ? "load-balance" : "url-test";
 
   for (const country of countries) {
     const meta = countriesMeta[country];
     if (!meta) continue;
 
-    const groupConfig = {
-      name: `${country}${NODE_SUFFIX}`,
+    const autoTestName = `${country}-自动测速`;
+
+    // 构建自动测速子组
+    const autoTestGroup = {
+      name: autoTestName,
       icon: meta.icon,
+      type: testGroupType,
       "include-all": true,
       filter: meta.pattern,
-      "exclude-filter": landing
-        ? `${landingExcludeFilter}|${baseExcludeFilter}`
-        : baseExcludeFilter,
-      type: groupType,
+      "exclude-filter": excludeFilter,
     };
 
     if (!loadBalance) {
-      Object.assign(groupConfig, {
+      Object.assign(autoTestGroup, {
         url: "https://cp.cloudflare.com/generate_204",
         interval: 60,
         tolerance: 20,
@@ -497,7 +503,18 @@ function buildCountryProxyGroups({ countries, landing, loadBalance }) {
       });
     }
 
-    groups.push(groupConfig);
+    // 构建国家代理组
+    const countrySelectGroup = {
+      name: `${country}${NODE_SUFFIX}`,
+      icon: meta.icon,
+      type: "select",
+      proxies: [autoTestName, PROXY_GROUPS.DIRECT],
+      "include-all": true,
+      filter: meta.pattern,
+      "exclude-filter": `excludeFilter`,
+    };
+
+    groups.push(autoTestGroup, countrySelectGroup);
   }
   return groups;
 }
@@ -749,7 +766,9 @@ function main(config) {
   });
 
   // 完整书写 Global 代理组以确保兼容性
-  const globalProxies = proxyGroups.map((item) => item.name);
+  const globalProxies = proxyGroups
+    .map((item) => item.name)
+    .filter((name) => !name.endsWith("-自动测速")); // 去除各个国家组的自动测速
   proxyGroups.push({
     name: "GLOBAL",
     icon: "https://gcore.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
@@ -757,6 +776,8 @@ function main(config) {
     type: "select",
     proxies: globalProxies,
   });
+
+  //
 
   const finalRules = buildRules({ quicEnabled });
 
