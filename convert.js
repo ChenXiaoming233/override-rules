@@ -8,7 +8,7 @@ https://github.com/powerfullz/override-rules
 - ipv6: 启用 IPv6 支持（默认 false）
 - full: 输出完整配置（适合纯内核启动，默认 false）
 - keepalive: 启用 tcp-keep-alive（默认 false）
-- fakeip: DNS 使用 FakeIP 模式（默认 false，false 为 RedirHost）
+- fakeip: DNS 使用 FakeIP 模式（默认 true，false 为 RedirHost）
 - quic: 允许 QUIC 流量（UDP 443，默认 false）
 - threshold: 国家节点数量小于该值时不显示分组 (默认 0)
 */
@@ -779,6 +779,14 @@ function main(config) {
       profile: {
         "store-selected": true,
       },
+    });
+
+  if (!fullConfig)
+    Object.assign(resultConfig, {
+      "mixed-port": 7890,
+      "redir-port": 7892,
+      "tproxy-port": 7893,
+      "routing-mark": 7894,
     });
 
   Object.assign(resultConfig, {
