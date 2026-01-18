@@ -713,6 +713,20 @@ function buildProxyGroups({
   ].filter(Boolean); // 过滤掉 null 值
 }
 
+const myProxyProviders = {
+  MyProvider: {
+    type: "http",
+    path: "./proxy_provider/赔钱机场.yaml",
+    url: "https://xn--cp3a08l.com/api/v1/client/subscribe?token=3fc972e32b774cb670fb326c35719073",
+    interval: 86400,
+    health_check: {
+      enable: true,
+      url: "https://cp.cloudflare.com/generate_204",
+      interval: 86400,
+    },
+  },
+};
+
 function main(config) {
   const resultConfig = { proxies: config.proxies };
   // 解析地区与低倍率信息
@@ -797,7 +811,7 @@ function main(config) {
     dns: fakeIPEnabled ? dnsConfigFakeIp : dnsConfig,
     "geodata-mode": true,
     "geox-url": geoxURL,
+    "proxy-providers": myProxyProviders, // 注入 proxy-provider
   });
-
   return resultConfig;
 }
