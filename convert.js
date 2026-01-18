@@ -714,15 +714,28 @@ function buildProxyGroups({
 }
 
 const myProxyProviders = {
-  MyProvider: {
+  赔钱机场: {
     type: "http",
     path: "./proxy_provider/赔钱机场.yaml",
     url: "https://xn--cp3a08l.com/api/v1/client/subscribe?token=3fc972e32b774cb670fb326c35719073",
-    interval: 86400,
+    filter: "MatchesNothing^",
+    interval: 43200,
     health_check: {
       enable: true,
       url: "https://cp.cloudflare.com/generate_204",
-      interval: 86400,
+      interval: 43200,
+    },
+  },
+  iKuuu: {
+    type: "http",
+    path: "./proxy_provider/iKuuu.yaml",
+    url: "https://1yrif.no-mad-world.club/link/qZx9WWdqTKBw8rH9?clash=3&extend=1",
+    filter: "MatchesNothing^",
+    interval: 43200,
+    health_check: {
+      enable: true,
+      url: "https://cp.cloudflare.com/generate_204",
+      interval: 43200,
     },
   },
 };
