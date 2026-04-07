@@ -117,7 +117,7 @@ function buildBaseLists({ landing, lowCost, countryGroupNames }) {
     countryGroupNames,
     lowCost && PROXY_GROUPS.LOW_COST,
     PROXY_GROUPS.MANUAL,
-    "DIRECT"
+    "DIRECT",
   );
 
   // 默认的代理列表，用于大多数策略组
@@ -126,7 +126,7 @@ function buildBaseLists({ landing, lowCost, countryGroupNames }) {
     countryGroupNames,
     lowCost && PROXY_GROUPS.LOW_COST,
     PROXY_GROUPS.MANUAL,
-    PROXY_GROUPS.DIRECT
+    PROXY_GROUPS.DIRECT,
   );
 
   // “直连”优先的代理列表
@@ -135,7 +135,7 @@ function buildBaseLists({ landing, lowCost, countryGroupNames }) {
     countryGroupNames,
     lowCost && PROXY_GROUPS.LOW_COST,
     PROXY_GROUPS.SELECT,
-    PROXY_GROUPS.MANUAL
+    PROXY_GROUPS.MANUAL,
   );
 
   // “故障转移”组的代理列表
@@ -144,7 +144,7 @@ function buildBaseLists({ landing, lowCost, countryGroupNames }) {
     countryGroupNames,
     lowCost && PROXY_GROUPS.LOW_COST,
     PROXY_GROUPS.MANUAL,
-    "DIRECT"
+    "DIRECT",
   );
 
   return {
@@ -308,7 +308,7 @@ const snifferConfig = {
 function buildDnsConfig({ mode, fakeIpFilter }) {
   const config = {
     enable: true,
-    listen: ":53",
+    listen: "0.0.0.0:1053",
     "enhanced-mode": mode,
     "fake-ip-range": "198.18.0.1/16",
     "fake-ip-filter-mode": "blacklist",
@@ -522,7 +522,7 @@ function buildProxyGroups({
   const frontProxySelector = landing
     ? defaultSelector.filter(
         (name) =>
-          name !== PROXY_GROUPS.LANDING && name !== PROXY_GROUPS.FALLBACK
+          name !== PROXY_GROUPS.LANDING && name !== PROXY_GROUPS.FALLBACK,
       )
     : [];
 
