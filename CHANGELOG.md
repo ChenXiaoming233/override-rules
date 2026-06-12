@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.8](https://github.com/powerfullz/override-rules/compare/src-v2.4.7...src-v2.4.8) (2026-06-12)
+
+
+### Features
+
+- Add QiufengADBlock rule provider and reorder proxy group layout ([dea33e6](https://github.com/powerfullz/override-rules/commit/dea33e60942f35fdda7cca7b222f02602f486f6a))
 ## [2.4.7](https://github.com/powerfullz/override-rules/compare/src-v2.4.6...src-v2.4.7) (2026-06-12)
 
 
