@@ -91,8 +91,14 @@ export function buildCountryProxyGroups({
     lowCostNodes,
     splitHighCost,
     highCostNodes,
-}: BuildCountryProxyGroupsInput): ProxyGroup[] {
+}: BuildCountryProxyGroupsInput): {
+    groups: ProxyGroup[];
+    lowCostSubGroups: ProxyGroup[];
+    highCostSubGroups: ProxyGroup[];
+} {
     const groups: ProxyGroup[] = [];
+    const lowCostSubGroups: ProxyGroup[] = [];
+    const highCostSubGroups: ProxyGroup[] = [];
     const lowCostSet = splitLowCost ? new Set(lowCostNodes) : null;
     const highCostSet = splitHighCost ? new Set(highCostNodes) : null;
 
@@ -130,18 +136,28 @@ export function buildCountryProxyGroups({
             const hasHighCost = highCost.length > 0;
 
             if (hasLowCost || hasHighCost) {
-                // Push subgroups first (order: low-cost, high-cost)
-                const proxies: string[] = [];
+                // Collect low-cost/high-cost subgroups into separate arrays
+                const subProxies: string[] = [];
 
                 if (hasLowCost) {
                     const subName = `${country}${LOW_COST_SUFFIX}`;
-                    groups.push({ name: subName, icon, type: "select", proxies: lowCost });
-                    proxies.push(subName);
+                    lowCostSubGroups.push({
+                        name: subName,
+                        icon,
+                        type: "select",
+                        proxies: lowCost,
+                    });
+                    subProxies.push(subName);
                 }
                 if (hasHighCost) {
                     const subName = `${country}${HIGH_COST_SUFFIX}`;
-                    groups.push({ name: subName, icon, type: "select", proxies: highCost });
-                    proxies.push(subName);
+                    highCostSubGroups.push({
+                        name: subName,
+                        icon,
+                        type: "select",
+                        proxies: highCost,
+                    });
+                    subProxies.push(subName);
                 }
 
                 // Main group references subgroups
@@ -150,7 +166,7 @@ export function buildCountryProxyGroups({
                         name: `${country}${NODE_SUFFIX}`,
                         icon,
                         groupType,
-                        nodeSource: { proxies: [...proxies, ...regular] },
+                        nodeSource: { proxies: [...subProxies, ...regular] },
                     })
                 );
             } else {
@@ -187,7 +203,7 @@ export function buildCountryProxyGroups({
         }
     }
 
-    return groups;
+    return { groups, lowCostSubGroups, highCostSubGroups };
 }
 export function buildProxyGroups({
     landing,
@@ -195,6 +211,8 @@ export function buildProxyGroups({
     groupType,
     countries,
     countryProxyGroups,
+    countryLowCostGroups,
+    countryHighCostGroups,
     lowCostNodes,
     highCostNodes,
     landingNodes,
@@ -214,12 +232,6 @@ export function buildProxyGroups({
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Proxy.png`,
             type: "select",
             proxies: defaultSelector,
-        },
-        {
-            name: PROXY_GROUPS.MANUAL,
-            icon: `${CDN_URL}/gh/shindgewongxj/WHATSINStash@master/icon/select.png`,
-            "include-all": true,
-            type: "select",
         },
         landing
             ? {
@@ -414,11 +426,18 @@ export function buildProxyGroups({
             tolerance: 20,
         },
         {
+            name: PROXY_GROUPS.MANUAL,
+            icon: `${CDN_URL}/gh/shindgewongxj/WHATSINStash@master/icon/select.png`,
+            "include-all": true,
+            type: "select",
+        },
+        {
             name: PROXY_GROUPS.AD_BLOCK,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png`,
             type: "select",
             proxies: ["REJECT", "REJECT-DROP", "DIRECT"],
         },
+        ...countryLowCostGroups,
         lowCostNodes.length > 0 || regexFilter
             ? buildGroupByType({
                   name: PROXY_GROUPS.LOW_COST,
@@ -429,6 +448,7 @@ export function buildProxyGroups({
                       : { "include-all": true as const, filter: LOW_COST_NODE_MATCHER.pattern },
               })
             : null,
+        ...countryHighCostGroups,
         highCostNodes.length > 0 || regexFilter
             ? buildGroupByType({
                   name: PROXY_GROUPS.HIGH_COST,

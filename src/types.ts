@@ -226,6 +226,8 @@ export interface BuildProxyGroupsInput {
     groupType: GroupType;
     countries: string[];
     countryProxyGroups: ProxyGroup[];
+    countryLowCostGroups: ProxyGroup[];
+    countryHighCostGroups: ProxyGroup[];
     lowCostNodes: string[];
     highCostNodes: string[];
     landingNodes: string[];
