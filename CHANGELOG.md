@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.7](https://github.com/powerfullz/override-rules/compare/src-v2.4.6...src-v2.4.7) (2026-06-12)
+
+
+### Features
+
+- Add highcost-split parameter and rename low-cost suffix ([e5b96bc](https://github.com/powerfullz/override-rules/commit/e5b96bc473c681ee565225ac9e39ba2aede5fd32))
 ## [2.4.6](https://github.com/powerfullz/override-rules/compare/src-v2.4.5...src-v2.4.6) (2026-06-12)
 
 
