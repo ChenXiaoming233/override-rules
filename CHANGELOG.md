@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.6](https://github.com/powerfullz/override-rules/compare/src-v2.4.5...src-v2.4.6) (2026-06-12)
+
+
+### Features
+
+- Add lowcost-split parameter to separate low-cost nodes into per-country subgroups ([c9b4cc8](https://github.com/powerfullz/override-rules/commit/c9b4cc80bc0f04082d30b7eaeb6567d945112964))
 ## [2.4.4](https://github.com/powerfullz/override-rules/compare/src-v2.4.3...src-v2.4.4) (2026-06-12)
 
 
