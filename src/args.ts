@@ -42,6 +42,7 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
         fakeIPEnabled: parseBool(args.fakeip, true),
         quicEnabled: parseBool(args.quic),
         regexFilter: parseBool(args.regex),
+        splitLowCost: parseBool(args["lowcost-split"], true),
         tunEnabled: parseBool(args.tun),
         countryThreshold: parseNumber(args.threshold, 0),
     };

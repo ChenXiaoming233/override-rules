@@ -63,6 +63,7 @@ const {
     fakeIPEnabled,
     quicEnabled,
     regexFilter,
+    splitLowCost,
     tunEnabled,
     countryThreshold,
 } = buildFeatureFlags(rawArgs);
@@ -97,6 +98,8 @@ function main(config: ClashConfig): ClashConfig {
         groupType,
         regexFilter,
         countryInfo,
+        splitLowCost,
+        lowCostNodes,
     });
 
     const proxyGroups = buildProxyGroups({

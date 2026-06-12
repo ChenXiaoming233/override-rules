@@ -2,6 +2,7 @@ import type { CountryMeta } from "./types";
 import { createCaseInsensitiveNodeMatcher } from "./utils";
 
 export const NODE_SUFFIX = "节点";
+export const LOW_COST_SUFFIX = " 低速";
 export const CDN_URL = "https://cdn.jsdelivr.net";
 
 export const PROXY_GROUPS = {

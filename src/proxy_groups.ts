@@ -3,6 +3,7 @@ import {
     LANDING_NODE_MATCHER,
     LOW_COST_NODE_MATCHER,
     NODE_SUFFIX,
+    LOW_COST_SUFFIX,
     PROXY_GROUPS,
     countriesMeta,
 } from "./constants";
@@ -61,6 +62,14 @@ function buildGroupByType({
 }
 
 /**
+ * 将两个正则模式合并为一个"同时匹配两者"的正则。
+ * 用于 regexFilter 模式下生成低速子组的 filter 表达式。
+ */
+function combinePatterns(p1: string, p2: string): string {
+    return `(?i)^(?=.*(?:${p1}))(?=.*(?:${p2})).*$`;
+}
+
+/**
  * 为每个地区生成对应的代理组配置。
  * @param input - 构建地区代理组所需的输入参数
  * @param input.countries - 需要生成代理组的地区名称列表（不含后缀）
@@ -76,29 +85,76 @@ export function buildCountryProxyGroups({
     groupType,
     regexFilter,
     countryInfo,
+    splitLowCost,
+    lowCostNodes,
 }: BuildCountryProxyGroupsInput): ProxyGroup[] {
     const groups: ProxyGroup[] = [];
+    const lowCostSet = splitLowCost ? new Set(lowCostNodes) : null;
 
-    const nodesByCountry: Record<string, string[]> | null = !regexFilter
-        ? Object.fromEntries(countryInfo.map((item: CountryInfoItem) => [item.country, item.nodes]))
-        : null;
+    const nodesByCountry: Record<string, string[]> | null =
+        !regexFilter || splitLowCost
+            ? Object.fromEntries(
+                  countryInfo.map((item: CountryInfoItem) => [item.country, item.nodes])
+              )
+            : null;
 
     for (const country of countries) {
         const meta = countriesMeta[country];
         if (!meta) continue;
 
-        const name = `${country}${NODE_SUFFIX}`;
         const icon = meta.icon;
 
-        const nodeSource = !regexFilter
-            ? { proxies: nodesByCountry?.[country] ?? [] }
-            : {
-                  "include-all": true as const,
-                  filter: meta.pattern,
-                  ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
-              };
+        if (splitLowCost && lowCostSet && nodesByCountry) {
+            const allNodes = nodesByCountry[country] ?? [];
+            const lowCost = allNodes.filter((n) => lowCostSet.has(n));
+            const regular = allNodes.filter((n) => !lowCostSet.has(n));
 
-        groups.push(buildGroupByType({ name, icon, groupType, nodeSource }));
+            if (lowCost.length > 0) {
+                // 低速子组（select 类型，用户手动选择）
+                const subName = `${country}${LOW_COST_SUFFIX}`;
+                groups.push({ name: subName, icon, type: "select", proxies: lowCost });
+
+                // 主组引用子组
+                groups.push(
+                    buildGroupByType({
+                        name: `${country}${NODE_SUFFIX}`,
+                        icon,
+                        groupType,
+                        nodeSource: { proxies: [subName, ...regular] },
+                    })
+                );
+            } else {
+                // 该地区无低倍率节点，退化为原始行为
+                groups.push(
+                    buildGroupByType({
+                        name: `${country}${NODE_SUFFIX}`,
+                        icon,
+                        groupType,
+                        nodeSource: !regexFilter
+                            ? { proxies: regular }
+                            : {
+                                  "include-all": true as const,
+                                  filter: meta.pattern,
+                                  ...(landing
+                                      ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
+                                      : {}),
+                              },
+                    })
+                );
+            }
+        } else {
+            const nodeSource = !regexFilter
+                ? { proxies: nodesByCountry?.[country] ?? [] }
+                : {
+                      "include-all": true as const,
+                      filter: meta.pattern,
+                      ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
+                  };
+
+            groups.push(
+                buildGroupByType({ name: `${country}${NODE_SUFFIX}`, icon, groupType, nodeSource })
+            );
+        }
     }
 
     return groups;

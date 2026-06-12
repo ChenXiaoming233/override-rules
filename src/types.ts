@@ -9,6 +9,7 @@ export interface ScriptArgs {
     quic?: string;
     regex?: string;
     threshold?: string;
+    "lowcost-split"?: string;
     tun?: string;
 }
 
@@ -24,6 +25,7 @@ export interface FeatureFlags {
     quicEnabled: boolean;
     regexFilter: boolean;
     countryThreshold: number;
+    splitLowCost: boolean;
     tunEnabled: boolean;
 }
 
@@ -209,6 +211,8 @@ export interface BuildCountryProxyGroupsInput {
     groupType: GroupType;
     regexFilter: boolean;
     countryInfo: CountryInfoItem[];
+    splitLowCost: boolean;
+    lowCostNodes: string[];
 }
 
 export interface BuildProxyGroupsInput {
