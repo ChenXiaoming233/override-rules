@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.9](https://github.com/powerfullz/override-rules/compare/src-v2.4.8...src-v2.4.9) (2026-06-12)
+
+
+### Features
+
+- Reposition low-cost/high-cost subgroups and manual proxy group ([5653846](https://github.com/powerfullz/override-rules/commit/56538464200dbece7d2f71ea13c719d36f7baa9e))
 ## [2.4.8](https://github.com/powerfullz/override-rules/compare/src-v2.4.7...src-v2.4.8) (2026-06-12)
 
 
