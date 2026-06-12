@@ -5,6 +5,7 @@ import {
     HIGH_COST_NODE_MATCHER,
     NODE_SUFFIX,
     LOW_COST_SUFFIX,
+    AUTO_SUFFIX,
     HIGH_COST_SUFFIX,
     PROXY_GROUPS,
     countriesMeta,
@@ -91,19 +92,23 @@ export function buildCountryProxyGroups({
     lowCostNodes,
     splitHighCost,
     highCostNodes,
+    autoSplit,
 }: BuildCountryProxyGroupsInput): {
     groups: ProxyGroup[];
     lowCostSubGroups: ProxyGroup[];
     highCostSubGroups: ProxyGroup[];
+    autoSubGroups: ProxyGroup[];
 } {
     const groups: ProxyGroup[] = [];
     const lowCostSubGroups: ProxyGroup[] = [];
     const highCostSubGroups: ProxyGroup[] = [];
-    const lowCostSet = splitLowCost ? new Set(lowCostNodes) : null;
-    const highCostSet = splitHighCost ? new Set(highCostNodes) : null;
+    const autoSubGroups: ProxyGroup[] = [];
+    const hasAutoSplit = autoSplit && groupType === 0;
+    const lowCostSet = (splitLowCost || hasAutoSplit) ? new Set(lowCostNodes) : null;
+    const highCostSet = (splitHighCost || hasAutoSplit) ? new Set(highCostNodes) : null;
 
     const nodesByCountry: Record<string, string[]> | null =
-        !regexFilter || splitLowCost || splitHighCost
+        !regexFilter || splitLowCost || splitHighCost || hasAutoSplit
             ? Object.fromEntries(
                   countryInfo.map((item: CountryInfoItem) => [item.country, item.nodes])
               )
@@ -115,7 +120,7 @@ export function buildCountryProxyGroups({
 
         const icon = meta.icon;
 
-        if ((splitLowCost || splitHighCost) && nodesByCountry) {
+        if ((splitLowCost || splitHighCost || hasAutoSplit) && nodesByCountry) {
             const allNodes = nodesByCountry[country] ?? [];
 
             // Three-way classification: low-cost -> high-cost -> regular
@@ -135,11 +140,11 @@ export function buildCountryProxyGroups({
             const hasLowCost = lowCost.length > 0;
             const hasHighCost = highCost.length > 0;
 
-            if (hasLowCost || hasHighCost) {
+            if (hasLowCost || hasHighCost || (hasAutoSplit && regular.length > 0)) {
                 // Collect low-cost/high-cost subgroups into separate arrays
                 const subProxies: string[] = [];
 
-                if (hasLowCost) {
+                if (hasLowCost && splitLowCost) {
                     const subName = `${country}${LOW_COST_SUFFIX}`;
                     lowCostSubGroups.push({
                         name: subName,
@@ -149,7 +154,7 @@ export function buildCountryProxyGroups({
                     });
                     subProxies.push(subName);
                 }
-                if (hasHighCost) {
+                if (hasHighCost && splitHighCost) {
                     const subName = `${country}${HIGH_COST_SUFFIX}`;
                     highCostSubGroups.push({
                         name: subName,
@@ -158,6 +163,20 @@ export function buildCountryProxyGroups({
                         proxies: highCost,
                     });
                     subProxies.push(subName);
+                }
+
+                if (hasAutoSplit && regular.length > 0) {
+                    const autoName = `${country}${AUTO_SUFFIX}`;
+                    autoSubGroups.push({
+                        name: autoName,
+                        icon,
+                        type: "url-test",
+                        url: "https://cp.cloudflare.com/generate_204",
+                        interval: 60,
+                        tolerance: 20,
+                        proxies: regular,
+                    });
+                    subProxies.push(autoName);
                 }
 
                 // Main group references subgroups
@@ -203,7 +222,7 @@ export function buildCountryProxyGroups({
         }
     }
 
-    return { groups, lowCostSubGroups, highCostSubGroups };
+    return { groups, lowCostSubGroups, highCostSubGroups, autoSubGroups };
 }
 export function buildProxyGroups({
     landing,
@@ -213,6 +232,7 @@ export function buildProxyGroups({
     countryProxyGroups,
     countryLowCostGroups,
     countryHighCostGroups,
+    countryAutoGroups,
     lowCostNodes,
     highCostNodes,
     landingNodes,
@@ -258,6 +278,7 @@ export function buildProxyGroups({
               }
             : null,
         ...countryProxyGroups,
+        ...countryAutoGroups,
         {
             name: PROXY_GROUPS.STATIC_RESOURCES,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png`,

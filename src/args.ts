@@ -44,6 +44,7 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
         regexFilter: parseBool(args.regex),
         splitLowCost: parseBool(args["lowcost-split"], true),
         splitHighCost: parseBool(args["highcost-split"]),
+        autoSplit: parseBool(args["auto-split"]),
         tunEnabled: parseBool(args.tun),
         countryThreshold: parseNumber(args.threshold, 0),
     };

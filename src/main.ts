@@ -66,6 +66,7 @@ const {
     regexFilter,
     splitLowCost,
     splitHighCost,
+    autoSplit,
     tunEnabled,
     countryThreshold,
 } = buildFeatureFlags(rawArgs);
@@ -100,6 +101,7 @@ function main(config: ClashConfig): ClashConfig {
         groups: countryProxyGroups,
         lowCostSubGroups: countryLowCostGroups,
         highCostSubGroups: countryHighCostGroups,
+        autoSubGroups: countryAutoGroups,
     } = buildCountryProxyGroups({
         countries,
         landing,
@@ -110,6 +112,7 @@ function main(config: ClashConfig): ClashConfig {
         lowCostNodes,
         splitHighCost,
         highCostNodes,
+        autoSplit,
     });
 
     const proxyGroups = buildProxyGroups({
@@ -120,6 +123,7 @@ function main(config: ClashConfig): ClashConfig {
         countryProxyGroups,
         countryLowCostGroups,
         countryHighCostGroups,
+        countryAutoGroups,
         lowCostNodes,
         highCostNodes,
         landingNodes,

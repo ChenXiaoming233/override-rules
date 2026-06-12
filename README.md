@@ -66,6 +66,7 @@
 *   `threshold`：国家/地区节点数量小于该值时不显示分组（默认 0）
 *   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立的低倍率子组（如"新加坡 低倍率"），默认 true
 *   `highcost-split`：是否将各地区内的高倍率节点拆分为独立的高倍率子组（如"新加坡 高倍率"），默认 false
+*   `auto-split`：当 `grouptype` 为 select（0）时，为每个地区自动创建 url-test 类型子组（如"新加坡 自动"），包含该地区除低倍率/高倍率外的所有节点。主组同时保留各子组引用和单个节点条目（默认 false）
 
 > **向后兼容**：旧的 `loadbalance` 参数仍然可用。当 `grouptype` 未指定时，`loadbalance=true` 等价于 `grouptype=2`，`loadbalance=false` 等价于 `grouptype=1`。
 

@@ -11,6 +11,7 @@ export interface ScriptArgs {
     threshold?: string;
     "lowcost-split"?: string;
     "highcost-split"?: string;
+    "auto-split"?: string;
     tun?: string;
 }
 
@@ -28,6 +29,7 @@ export interface FeatureFlags {
     countryThreshold: number;
     splitLowCost: boolean;
     splitHighCost: boolean;
+    autoSplit: boolean;
     tunEnabled: boolean;
 }
 
@@ -218,6 +220,7 @@ export interface BuildCountryProxyGroupsInput {
     lowCostNodes: string[];
     splitHighCost: boolean;
     highCostNodes: string[];
+    autoSplit: boolean;
 }
 
 export interface BuildProxyGroupsInput {
@@ -228,6 +231,7 @@ export interface BuildProxyGroupsInput {
     countryProxyGroups: ProxyGroup[];
     countryLowCostGroups: ProxyGroup[];
     countryHighCostGroups: ProxyGroup[];
+    countryAutoGroups: ProxyGroup[];
     lowCostNodes: string[];
     highCostNodes: string[];
     landingNodes: string[];
