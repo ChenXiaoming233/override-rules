@@ -7,6 +7,30 @@ import {
 } from "./constants";
 import type { ClashConfig, CountryInfoItem } from "./types";
 
+/**
+ * 根据节点数量阈值，将国家地区列表拆分为“小地区”（节点数 ≤ threshold）和“常规地区”（节点数 > threshold）。
+ * @param countryInfo - 由 `parseCountries` 返回的地区节点信息数组
+ * @param threshold - 节点数阈值
+ * @returns 拆分后的小地区列表和常规地区列表
+ */
+export function parseSmallCountries(
+  countryInfo: CountryInfoItem[],
+  threshold: number
+): { small: CountryInfoItem[]; regular: CountryInfoItem[] } {
+  const small: CountryInfoItem[] = [];
+  const regular: CountryInfoItem[] = [];
+
+  for (const item of countryInfo) {
+    if (item.nodes.length <= threshold) {
+      small.push(item);
+    } else {
+      regular.push(item);
+    }
+  }
+
+  return { small, regular };
+}
+
 const COUNTRY_REGEX_MAP = Object.fromEntries(
     Object.entries(countriesMeta).map(([country, meta]) => {
         return [country, new RegExp(meta.pattern.replace(/^\(\?i\)/, ""))];

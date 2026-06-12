@@ -13,6 +13,7 @@ export interface ScriptArgs {
     "highcost-split"?: string;
     "auto-split"?: string;
     tun?: string;
+    "lite-combine"?: string;
 }
 
 export type GroupType = 0 | 1 | 2;
@@ -31,6 +32,7 @@ export interface FeatureFlags {
     splitHighCost: boolean;
     autoSplit: boolean;
     tunEnabled: boolean;
+    liteCombine: number;
 }
 
 export interface ProxyNode {
@@ -208,6 +210,7 @@ export interface BuildBaseListsInput {
     countryGroupNames: string[];
     nonLandingNodes: string[];
     regexFilter: boolean;
+    smallCountryGroupName?: string;
 }
 
 export interface BuildCountryProxyGroupsInput {
@@ -232,6 +235,7 @@ export interface BuildProxyGroupsInput {
     countryLowCostGroups: ProxyGroup[];
     countryHighCostGroups: ProxyGroup[];
     countryAutoGroups: ProxyGroup[];
+    smallCountryGroup?: ProxyGroup | null;
     lowCostNodes: string[];
     highCostNodes: string[];
     landingNodes: string[];

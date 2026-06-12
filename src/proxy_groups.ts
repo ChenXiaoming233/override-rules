@@ -233,6 +233,7 @@ export function buildProxyGroups({
     countryLowCostGroups,
     countryHighCostGroups,
     countryAutoGroups,
+    smallCountryGroup,
     lowCostNodes,
     highCostNodes,
     landingNodes,
@@ -278,6 +279,7 @@ export function buildProxyGroups({
               }
             : null,
         ...countryProxyGroups,
+        smallCountryGroup !== undefined ? smallCountryGroup : null,
         ...countryAutoGroups,
         {
             name: PROXY_GROUPS.STATIC_RESOURCES,

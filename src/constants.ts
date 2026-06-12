@@ -5,6 +5,7 @@ export const NODE_SUFFIX = "节点";
 export const LOW_COST_SUFFIX = " 低倍率";
 export const AUTO_SUFFIX = " 自动";
 export const CDN_URL = "https://cdn.jsdelivr.net";
+export const OTHER_ICON = `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Multi_Flag.png`;
 
 export const PROXY_GROUPS = {
     SELECT: "选择代理",
@@ -41,6 +42,7 @@ export const PROXY_GROUPS = {
     GLOBAL: "GLOBAL",
     HIGH_COST: "高倍率节点",
     FINAL: "Final",
+    OTHER: "其他节点",
 } as const;
 
 export const LOW_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(

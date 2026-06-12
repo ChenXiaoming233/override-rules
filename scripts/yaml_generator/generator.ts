@@ -35,7 +35,7 @@ const CONVERT_FILE = path.join(BASE_DIR, "convert.js");
 const FAKE_PROXIES_FILE = path.join(GENERATOR_DIR, "fake_proxies.json");
 const OUTPUT_DIR = path.join(BASE_DIR, "yamls");
 
-const FLAGS = ["landing", "ipv6", "full", "keepalive", "fakeip", "quic", "tun"] as const;
+const FLAGS = ["landing", "ipv6", "full", "keepalive", "fakeip", "quic", "tun", "lite-combine"] as const;
 
 type FlagName = (typeof FLAGS)[number];
 type FlagArgs = Record<FlagName, boolean>;
@@ -43,7 +43,7 @@ type FlagArgs = Record<FlagName, boolean>;
 const GROUPTYPE_VALUES = [0, 1, 2] as const;
 type GroupTypeValue = (typeof GROUPTYPE_VALUES)[number];
 
-type GeneratorScriptArgs = { [K in FlagName]: boolean } & { regex: true; grouptype: string };
+type GeneratorScriptArgs = { [K in Exclude<FlagName, "lite-combine">]: boolean } & { regex: true; grouptype: string; "lite-combine": string };
 
 interface ComboArgs {
     flags: FlagArgs;
@@ -64,6 +64,7 @@ const FLAG_SHORT_NAMES: Record<FlagName, string> = {
     fakeip: "fakeip",
     quic: "quic",
     tun: "tun",
+    "lite-combine": "litecombine",
 };
 
 function loadFakeConfig(): ClashConfig {
@@ -96,7 +97,18 @@ function generateArgCombos(): ComboArgs[] {
 function runConvert(baseConfig: ClashConfig, args: ComboArgs): ClashConfig {
     const code = readFileSync(CONVERT_FILE, "utf-8");
     const sandbox: VmSandbox = {
-        $arguments: { ...args.flags, grouptype: String(args.grouptype), regex: true },
+        $arguments: {
+            landing: args.flags.landing,
+            ipv6: args.flags.ipv6,
+            full: args.flags.full,
+            keepalive: args.flags.keepalive,
+            fakeip: args.flags.fakeip,
+            quic: args.flags.quic,
+            tun: args.flags.tun,
+            "lite-combine": args.flags["lite-combine"] ? "1" : "0",
+            grouptype: String(args.grouptype),
+            regex: true,
+        },
         console,
     };
 

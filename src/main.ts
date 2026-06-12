@@ -12,13 +12,14 @@ https://github.com/powerfullz/override-rules
 - keepalive: 启用 tcp-keep-alive（默认 false）
 - fakeip: DNS 使用 FakeIP 模式（默认 true；传 false 时为 RedirHost）
 - quic: 允许 QUIC 流量（UDP 443，默认 false）
+- lite-combine: 将节点数不超过该值的地区合并到统一的"其他节点"代理组中，放置在地区节点组的最后。设为 0 禁用此功能 (默认 1)
 - threshold: 地区节点数量小于该值时不显示分组 (默认 0)
 - regex: 使用正则过滤模式（include-all + filter）写入各地区代理组，而非直接枚举节点名称（默认 false）
 
 源码已迁移至 `src/*.ts`。
 */
 
-import { CDN_URL, PROXY_GROUPS } from "./constants";
+import { CDN_URL, OTHER_ICON, PROXY_GROUPS, countriesMeta } from "./constants";
 import { buildFeatureFlags } from "./args";
 import { buildCountryProxyGroups, buildProxyGroups } from "./proxy_groups";
 import {
@@ -27,6 +28,7 @@ import {
     parseLowCost,
     parseHighCost,
     parseNodesByLanding,
+    parseSmallCountries,
     stripNodeSuffix,
 } from "./node_parser";
 import { buildRules } from "./rules";
@@ -34,7 +36,7 @@ import { ruleProviders } from "./rule_providers";
 import { buildDns, snifferConfig } from "./dns";
 import { buildTunConfig } from "./tun";
 import { buildBaseLists } from "./selectors";
-import type { ClashConfig, ScriptArgs } from "./types";
+import type { ClashConfig, ProxyGroup, ScriptArgs } from "./types";
 
 const geoxURL = {
     geoip: `${CDN_URL}/gh/MetaCubeX/meta-rules-dat@release/geoip.dat`,
@@ -69,18 +71,60 @@ const {
     autoSplit,
     tunEnabled,
     countryThreshold,
+    liteCombine,
 } = buildFeatureFlags(rawArgs);
 
 function main(config: ClashConfig): ClashConfig {
     const countryInfo = parseCountries(config, landing);
     const lowCostNodes = parseLowCost(config);
     const highCostNodes = parseHighCost(config, lowCostNodes);
-    const countryGroupNames = getCountryGroupNames(countryInfo, countryThreshold);
+
+    // Split off small countries if liteCombine is enabled
+    let smallCountryNodes: string[] = [];
+    let smallCountryPatterns: string[] = [];
+    let filteredCountryInfo = countryInfo;
+
+    if (liteCombine > 0) {
+        const { small, regular } = parseSmallCountries(countryInfo, liteCombine);
+        smallCountryNodes = small.flatMap((item) => item.nodes);
+        smallCountryPatterns = small
+            .map((item) => countriesMeta[item.country]?.pattern)
+            .filter(Boolean) as string[];
+        filteredCountryInfo = regular;
+    }
+
+    const countryGroupNames = getCountryGroupNames(filteredCountryInfo, countryThreshold);
     const countries = stripNodeSuffix(countryGroupNames);
 
     const { landingNodes, nonLandingNodes } = landing
         ? parseNodesByLanding(config)
         : { landingNodes: [], nonLandingNodes: [] };
+
+    // Build the merged "\u5176\u4ed6\u8282\u70b9" proxy group from small countries
+    let smallCountryGroup: ProxyGroup | null = null;
+    const smallCountryGroupName = smallCountryNodes.length > 0 ? PROXY_GROUPS.OTHER : undefined;
+
+    if (smallCountryGroupName) {
+        const smallCountryNodeSource = !regexFilter
+            ? { proxies: smallCountryNodes }
+            : { "include-all": true as const, filter: "(?i)" + smallCountryPatterns.join("|") };
+
+        switch (groupType) {
+            case 0:
+                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "select", ...smallCountryNodeSource };
+                break;
+            case 1:
+                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "url-test", url: "https://cp.cloudflare.com/generate_204", interval: 60, tolerance: 20, ...smallCountryNodeSource };
+                break;
+            case 2:
+                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "load-balance", strategy: "sticky-sessions", url: "https://cp.cloudflare.com/generate_204", interval: 60, tolerance: 20, ...smallCountryNodeSource };
+                break;
+        }
+    }
+
+    const allCountryGroupNames = smallCountryGroupName
+        ? [...countryGroupNames, smallCountryGroupName]
+        : countryGroupNames;
 
     const {
         defaultProxies,
@@ -92,7 +136,7 @@ function main(config: ClashConfig): ClashConfig {
         landing,
         lowCostNodes,
         highCostNodes,
-        countryGroupNames,
+        countryGroupNames: allCountryGroupNames,
         nonLandingNodes,
         regexFilter,
     });
@@ -107,7 +151,7 @@ function main(config: ClashConfig): ClashConfig {
         landing,
         groupType,
         regexFilter,
-        countryInfo,
+        countryInfo: filteredCountryInfo,
         splitLowCost,
         lowCostNodes,
         splitHighCost,
@@ -124,6 +168,7 @@ function main(config: ClashConfig): ClashConfig {
         countryLowCostGroups,
         countryHighCostGroups,
         countryAutoGroups,
+        smallCountryGroup,
         lowCostNodes,
         highCostNodes,
         landingNodes,

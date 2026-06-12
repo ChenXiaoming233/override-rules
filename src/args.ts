@@ -47,5 +47,6 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
         autoSplit: parseBool(args["auto-split"]),
         tunEnabled: parseBool(args.tun),
         countryThreshold: parseNumber(args.threshold, 0),
+        liteCombine: parseNumber(args["lite-combine"], 1),
     };
 }
