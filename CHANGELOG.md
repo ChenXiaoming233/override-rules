@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.0](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.0) (2026-06-12)
+
+
+### Features
+
+- 新增 select 模式下地区节点组创建自动选择子组 ([523311c](https://github.com/powerfullz/override-rules/commit/523311cb955b292188d8a2df1bf0543cc58c76fe))
 ## [2.4.9](https://github.com/powerfullz/override-rules/compare/src-v2.4.8...src-v2.4.9) (2026-06-12)
 
 
