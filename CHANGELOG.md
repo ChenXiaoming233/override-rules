@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.2](https://github.com/powerfullz/override-rules/compare/src-v2.5.1...src-v2.5.2) (2026-06-12)
+
+
+### Bug Fixes
+
+- 将自动子节点组移动至整个代理的末尾 ([81bcae9](https://github.com/powerfullz/override-rules/commit/81bcae92d1bf7dad1ec1d9e5cf8e8f8c39ebecb4))
 ## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.5.0...src-v2.5.1) (2026-06-12)
 
 
