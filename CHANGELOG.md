@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.4.4](https://github.com/powerfullz/override-rules/compare/src-v2.4.3...src-v2.4.4) (2026-06-12)
+
+
+### Chores
+
+- Optimise icons ([052e732](https://github.com/powerfullz/override-rules/commit/052e7321fb8452d121a808e1d6fac30e0c3df122))
+- Update dependencies and remove noisy dependabot ([45f77f5](https://github.com/powerfullz/override-rules/commit/45f77f555bb309b7920300008297ff4b0a88cc27))
+- Bump @typescript/native-preview ([12c53b6](https://github.com/powerfullz/override-rules/commit/12c53b682ff4ab07b77d033ed8fb25e202d7f3df))
+
+
+### Documentation
+
+- Update HOW_TO_CUSTOMISE.md ([e118050](https://github.com/powerfullz/override-rules/commit/e1180506868432fd55bb7538783842b3a0c8e13b))
+
+
+### Features
+
+- Add direct rule for cn geosite ([7d6882c](https://github.com/powerfullz/override-rules/commit/7d6882c528165f6403a9502943d5f542e8cf11af))
 ## [2.4.3](https://github.com/powerfullz/override-rules/compare/src-v2.4.2...src-v2.4.3) (2026-05-23)
 
 
