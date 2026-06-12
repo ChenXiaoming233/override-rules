@@ -25,6 +25,7 @@ import {
     getCountryGroupNames,
     parseCountries,
     parseLowCost,
+    parseHighCost,
     parseNodesByLanding,
     stripNodeSuffix,
 } from "./node_parser";
@@ -64,6 +65,7 @@ const {
     quicEnabled,
     regexFilter,
     splitLowCost,
+    splitHighCost,
     tunEnabled,
     countryThreshold,
 } = buildFeatureFlags(rawArgs);
@@ -71,6 +73,7 @@ const {
 function main(config: ClashConfig): ClashConfig {
     const countryInfo = parseCountries(config, landing);
     const lowCostNodes = parseLowCost(config);
+    const highCostNodes = parseHighCost(config, lowCostNodes);
     const countryGroupNames = getCountryGroupNames(countryInfo, countryThreshold);
     const countries = stripNodeSuffix(countryGroupNames);
 
@@ -87,6 +90,7 @@ function main(config: ClashConfig): ClashConfig {
     } = buildBaseLists({
         landing,
         lowCostNodes,
+        highCostNodes,
         countryGroupNames,
         nonLandingNodes,
         regexFilter,
@@ -100,6 +104,8 @@ function main(config: ClashConfig): ClashConfig {
         countryInfo,
         splitLowCost,
         lowCostNodes,
+        splitHighCost,
+        highCostNodes,
     });
 
     const proxyGroups = buildProxyGroups({
@@ -109,6 +115,7 @@ function main(config: ClashConfig): ClashConfig {
         countries,
         countryProxyGroups,
         lowCostNodes,
+        highCostNodes,
         landingNodes,
         defaultProxies,
         defaultProxiesDirect,

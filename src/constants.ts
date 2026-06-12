@@ -2,7 +2,7 @@ import type { CountryMeta } from "./types";
 import { createCaseInsensitiveNodeMatcher } from "./utils";
 
 export const NODE_SUFFIX = "节点";
-export const LOW_COST_SUFFIX = " 低速";
+export const LOW_COST_SUFFIX = " 低倍率";
 export const CDN_URL = "https://cdn.jsdelivr.net";
 
 export const PROXY_GROUPS = {
@@ -38,6 +38,7 @@ export const PROXY_GROUPS = {
     SOGOU_INPUT: "搜狗输入法",
     AD_BLOCK: "广告拦截",
     GLOBAL: "GLOBAL",
+    HIGH_COST: "高倍率节点",
     FINAL: "Final",
 } as const;
 
@@ -47,6 +48,12 @@ export const LOW_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
 
 export const LANDING_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
     String.raw`家宽|家庭宽带|商宽|商业宽带|星链|Starlink|落地`
+);
+
+export const HIGH_COST_SUFFIX = " 高倍率";
+
+export const HIGH_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
+    String.raw`[2-9]\.[0-9]|高倍率|Premium|旗舰|专线|VIP`
 );
 
 /**

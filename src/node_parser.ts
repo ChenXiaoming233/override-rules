@@ -2,6 +2,7 @@ import {
     LANDING_NODE_MATCHER,
     NODE_SUFFIX,
     LOW_COST_NODE_MATCHER,
+    HIGH_COST_NODE_MATCHER,
     countriesMeta,
 } from "./constants";
 import type { ClashConfig, CountryInfoItem } from "./types";
@@ -20,6 +21,24 @@ const COUNTRY_REGEX_MAP = Object.fromEntries(
 export function parseLowCost(config: ClashConfig): string[] {
     return (config.proxies || [])
         .filter((proxy) => LOW_COST_NODE_MATCHER.regex.test(proxy.name || ""))
+        .map((proxy) => proxy.name)
+        .filter((name): name is string => Boolean(name));
+}
+
+/**
+ * 从 Clash 配置中筛选出所有高倍率节点的名称。
+ * 高倍率匹配优先级低于低倍率：已匹配低倍率的节点不会进入高倍率列表。
+ * @param config - 当前的 Clash 配置对象，需包含 `proxies` 字段
+ * @param excludeNodes - 需要跳过的节点名称列表（通常传入低倍率节点列表）
+ * @returns 匹配高倍率节点正则的节点名称数组
+ */
+export function parseHighCost(config: ClashConfig, excludeNodes: string[] = []): string[] {
+    const excludeSet = new Set(excludeNodes);
+    return (config.proxies || [])
+        .filter((proxy) => {
+            const name = proxy.name || "";
+            return HIGH_COST_NODE_MATCHER.regex.test(name) && !excludeSet.has(name);
+        })
         .map((proxy) => proxy.name)
         .filter((name): name is string => Boolean(name));
 }

@@ -10,6 +10,7 @@ export interface ScriptArgs {
     regex?: string;
     threshold?: string;
     "lowcost-split"?: string;
+    "highcost-split"?: string;
     tun?: string;
 }
 
@@ -26,6 +27,7 @@ export interface FeatureFlags {
     regexFilter: boolean;
     countryThreshold: number;
     splitLowCost: boolean;
+    splitHighCost: boolean;
     tunEnabled: boolean;
 }
 
@@ -200,6 +202,7 @@ export interface BaseLists {
 export interface BuildBaseListsInput {
     landing: boolean;
     lowCostNodes: string[];
+    highCostNodes: string[];
     countryGroupNames: string[];
     nonLandingNodes: string[];
     regexFilter: boolean;
@@ -213,6 +216,8 @@ export interface BuildCountryProxyGroupsInput {
     countryInfo: CountryInfoItem[];
     splitLowCost: boolean;
     lowCostNodes: string[];
+    splitHighCost: boolean;
+    highCostNodes: string[];
 }
 
 export interface BuildProxyGroupsInput {
@@ -222,6 +227,7 @@ export interface BuildProxyGroupsInput {
     countries: string[];
     countryProxyGroups: ProxyGroup[];
     lowCostNodes: string[];
+    highCostNodes: string[];
     landingNodes: string[];
     defaultProxies: string[];
     defaultProxiesDirect: string[];

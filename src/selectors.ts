@@ -15,11 +15,13 @@ import type { BaseLists, BuildBaseListsInput } from "./types";
 export function buildBaseLists({
     landing,
     lowCostNodes,
+    highCostNodes,
     countryGroupNames,
     nonLandingNodes,
     regexFilter,
 }: BuildBaseListsInput): BaseLists {
     const lowCost = lowCostNodes.length > 0 || regexFilter;
+    const highCost = highCostNodes.length > 0 || regexFilter;
 
     const defaultSelector = buildList(
         PROXY_GROUPS.AUTO,
@@ -27,6 +29,7 @@ export function buildBaseLists({
         landing && PROXY_GROUPS.LANDING,
         countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
+        highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.MANUAL,
         "DIRECT"
     );
@@ -36,6 +39,7 @@ export function buildBaseLists({
         landing && PROXY_GROUPS.LANDING,
         countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
+        highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.MANUAL,
         "DIRECT"
     );
@@ -45,6 +49,7 @@ export function buildBaseLists({
         landing && PROXY_GROUPS.LANDING,
         countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
+        highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.SELECT,
         PROXY_GROUPS.MANUAL
     );
