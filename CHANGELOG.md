@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.5.0...src-v2.5.1) (2026-06-12)
+
+
+### Features
+
+- 新增地区节点数较少时合并为其他节点 ([c4e7fe8](https://github.com/powerfullz/override-rules/commit/c4e7fe8b319a7b505258c036cb1fc756515faf37))
 ## [2.5.0](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.0) (2026-06-12)
 
 
