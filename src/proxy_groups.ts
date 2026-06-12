@@ -245,6 +245,7 @@ export function buildProxyGroups({
                       : { proxies: landingNodes }),
               }
             : null,
+        ...countryProxyGroups,
         {
             name: PROXY_GROUPS.STATIC_RESOURCES,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png`,
@@ -438,7 +439,6 @@ export function buildProxyGroups({
                       : { "include-all": true as const, filter: HIGH_COST_NODE_MATCHER.pattern },
               })
             : null,
-        ...countryProxyGroups,
     ];
 
     return groups.filter(isNotNull);
