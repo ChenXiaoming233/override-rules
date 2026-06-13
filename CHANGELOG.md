@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.4](https://github.com/powerfullz/override-rules/compare/src-v2.5.3...src-v2.5.4) (2026-06-13)
+
+
+### Bug Fixes
+
+- 移除 battlenet GEOSITE 规则 ([78a3a2f](https://github.com/powerfullz/override-rules/commit/78a3a2ff145a07c37382b4ce4b228c1a6d3c8bdf))
 ## [2.5.3](https://github.com/powerfullz/override-rules/compare/src-v2.5.2...src-v2.5.3) (2026-06-13)
 
 
