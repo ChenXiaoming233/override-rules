@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.5](https://github.com/powerfullz/override-rules/compare/src-v2.5.4...src-v2.5.5) (2026-06-13)
+
+
+### Bug Fixes
+
+- 将 SteamFix 规则移至游戏平台 GEOSITE 规则之前 ([0d4d522](https://github.com/powerfullz/override-rules/commit/0d4d522d54916cbb163e0129e97f57ce6afffa4e))
 ## [2.5.4](https://github.com/powerfullz/override-rules/compare/src-v2.5.3...src-v2.5.4) (2026-06-13)
 
 
