@@ -65,6 +65,34 @@ export function buildGroupByType({
 }
 
 /**
+ * 将节点列表按低倍率、高倍率、常规三类进行分类。
+ */
+function classifyCountryNodes(
+    allNodes: string[],
+    lowCostSet: Set<string> | null,
+    highCostSet: Set<string> | null,
+): { lowCost: string[]; highCost: string[]; regular: string[] } {
+    let regular = allNodes;
+    const lowCost: string[] = [];
+    const highCost: string[] = [];
+
+    if (lowCostSet) {
+        for (const n of allNodes) {
+            if (lowCostSet.has(n)) lowCost.push(n);
+        }
+        regular = regular.filter((n) => !lowCostSet.has(n));
+    }
+    if (highCostSet) {
+        for (const n of regular) {
+            if (highCostSet.has(n)) highCost.push(n);
+        }
+        regular = regular.filter((n) => !highCostSet.has(n));
+    }
+
+    return { lowCost, highCost, regular };
+}
+
+/**
  * 为每个地区生成对应的代理组配置。
  * @param input - 构建地区代理组所需的输入参数
  * @param input.countries - 需要生成代理组的地区名称列表（不含后缀）
@@ -98,9 +126,10 @@ export function buildCountryProxyGroups({
     const hasAutoSplit = autoSplit && groupType === 0;
     const lowCostSet = splitLowCost || hasAutoSplit ? new Set(lowCostNodes) : null;
     const highCostSet = splitHighCost || hasAutoSplit ? new Set(highCostNodes) : null;
+    const needsClassification = splitLowCost || splitHighCost || hasAutoSplit;
 
     const nodesByCountry: Record<string, string[]> | null =
-        !regexFilter || splitLowCost || splitHighCost || hasAutoSplit
+        !regexFilter || needsClassification
             ? Object.fromEntries(
                   countryInfo.map((item: CountryInfoItem) => [item.country, item.nodes])
               )
@@ -112,111 +141,87 @@ export function buildCountryProxyGroups({
 
         const icon = meta.icon;
 
-        if ((splitLowCost || splitHighCost || hasAutoSplit) && nodesByCountry) {
-            const allNodes = nodesByCountry[country] ?? [];
-
-            // Three-way classification: low-cost -> high-cost -> regular
-            let lowCost: string[] = [];
-            let highCost: string[] = [];
-            let regular = allNodes;
-
-            if (lowCostSet) {
-                lowCost = allNodes.filter((n) => lowCostSet.has(n));
-                regular = regular.filter((n) => !lowCostSet.has(n));
-            }
-            if (highCostSet) {
-                highCost = regular.filter((n) => highCostSet.has(n));
-                regular = regular.filter((n) => !highCostSet.has(n));
-            }
-
-            const hasLowCost = lowCost.length > 0;
-            const hasHighCost = highCost.length > 0;
-
-            if (hasLowCost || hasHighCost || (hasAutoSplit && regular.length > 0)) {
-                // Collect low-cost/high-cost subgroups into separate arrays
-                const subProxies: string[] = [];
-
-                if (hasLowCost && splitLowCost) {
-                    const subName = `${country}${LOW_COST_SUFFIX}`;
-                    lowCostSubGroups.push({
-                        name: subName,
-                        icon,
-                        type: "select",
-                        proxies: lowCost,
-                    });
-                    subProxies.push(subName);
-                }
-                if (hasHighCost && splitHighCost) {
-                    const subName = `${country}${HIGH_COST_SUFFIX}`;
-                    highCostSubGroups.push({
-                        name: subName,
-                        icon,
-                        type: "select",
-                        proxies: highCost,
-                    });
-                    subProxies.push(subName);
-                }
-
-                if (hasAutoSplit && regular.length > 0) {
-                    const autoName = `${country}${AUTO_SUFFIX}`;
-                    autoSubGroups.push({
-                        name: autoName,
-                        icon,
-                        type: "url-test",
-                        url: "https://cp.cloudflare.com/generate_204",
-                        interval: 60,
-                        tolerance: 20,
-                        proxies: regular,
-                    });
-                    subProxies.push(autoName);
-                }
-
-                // Main group references subgroups
-                groups.push(
-                    buildGroupByType({
-                        name: `${country}${NODE_SUFFIX}`,
-                        icon,
-                        groupType,
-                        nodeSource: (() => {
-                            const merged = [...subProxies, ...regular];
-                            if (hasLowCost && !splitLowCost) merged.push(...lowCost);
-                            if (hasHighCost && !splitHighCost) merged.push(...highCost);
-                            return { proxies: merged };
-                        })(),
-                    })
-                );
-            } else {
-                // Neither low-cost nor high-cost nodes found, fall through to original behavior
-                groups.push(
-                    buildGroupByType({
-                        name: `${country}${NODE_SUFFIX}`,
-                        icon,
-                        groupType,
-                        nodeSource: !regexFilter
-                            ? { proxies: regular }
-                            : {
-                                  "include-all": true as const,
-                                  filter: meta.pattern,
-                                  ...(landing
-                                      ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
-                                      : {}),
-                              },
-                    })
-                );
-            }
-        } else {
-            const nodeSource = !regexFilter
-                ? { proxies: nodesByCountry?.[country] ?? [] }
-                : {
-                      "include-all": true as const,
-                      filter: meta.pattern,
-                      ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
-                  };
-
+        if (!needsClassification || !nodesByCountry) {
             groups.push(
-                buildGroupByType({ name: `${country}${NODE_SUFFIX}`, icon, groupType, nodeSource })
+                buildGroupByType({
+                    name: `${country}${NODE_SUFFIX}`,
+                    icon,
+                    groupType,
+                    nodeSource: !regexFilter
+                        ? { proxies: nodesByCountry?.[country] ?? [] }
+                        : {
+                              "include-all": true as const,
+                              filter: meta.pattern,
+                              ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
+                          },
+                })
             );
+            continue;
         }
+
+        const allNodes = nodesByCountry[country] ?? [];
+        const { lowCost, highCost, regular } = classifyCountryNodes(allNodes, lowCostSet, highCostSet);
+
+        const hasLowCost = lowCost.length > 0;
+        const hasHighCost = highCost.length > 0;
+        const hasAuto = hasAutoSplit && regular.length > 0;
+
+        if (!hasLowCost && !hasHighCost && !hasAuto) {
+            groups.push(
+                buildGroupByType({
+                    name: `${country}${NODE_SUFFIX}`,
+                    icon,
+                    groupType,
+                    nodeSource: !regexFilter
+                        ? { proxies: regular }
+                        : {
+                              "include-all": true as const,
+                              filter: meta.pattern,
+                              ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
+                          },
+                })
+            );
+            continue;
+        }
+
+        const subProxies: string[] = [];
+
+        if (hasLowCost && splitLowCost) {
+            const subName = `${country}${LOW_COST_SUFFIX}`;
+            lowCostSubGroups.push({ name: subName, icon, type: "select", proxies: lowCost });
+            subProxies.push(subName);
+        }
+        if (hasHighCost && splitHighCost) {
+            const subName = `${country}${HIGH_COST_SUFFIX}`;
+            highCostSubGroups.push({ name: subName, icon, type: "select", proxies: highCost });
+            subProxies.push(subName);
+        }
+        if (hasAuto) {
+            const autoName = `${country}${AUTO_SUFFIX}`;
+            autoSubGroups.push({
+                name: autoName,
+                icon,
+                type: "url-test",
+                url: "https://cp.cloudflare.com/generate_204",
+                interval: 60,
+                tolerance: 20,
+                proxies: regular,
+            });
+            subProxies.push(autoName);
+        }
+
+        const merged = [...subProxies, ...regular];
+        if (hasLowCost && !splitLowCost) merged.push(...lowCost);
+        if (hasHighCost && !splitHighCost) merged.push(...highCost);
+
+        groups.push(
+            buildGroupByType({
+                name: `${country}${NODE_SUFFIX}`,
+                icon,
+                groupType,
+                nodeSource: { proxies: merged },
+            })
+        );
     }
 
     return { groups, lowCostSubGroups, highCostSubGroups, autoSubGroups };
