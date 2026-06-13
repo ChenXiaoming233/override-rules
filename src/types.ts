@@ -201,6 +201,7 @@ export interface BaseLists {
     defaultSelector: string[];
     defaultFallback: string[];
     frontProxySelector: string[];
+    staticResourcesProxies: string[];
 }
 
 export interface BuildBaseListsInput {
@@ -211,6 +212,7 @@ export interface BuildBaseListsInput {
     nonLandingNodes: string[];
     regexFilter: boolean;
     smallCountryGroupName?: string;
+    countryLowCostGroupNames?: string[];
 }
 
 export interface BuildCountryProxyGroupsInput {
@@ -244,4 +246,5 @@ export interface BuildProxyGroupsInput {
     defaultSelector: string[];
     defaultFallback: string[];
     frontProxySelector: string[];
+    staticResourcesProxies: string[];
 }

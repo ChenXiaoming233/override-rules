@@ -127,21 +127,6 @@ function main(config: ClashConfig): ClashConfig {
         : countryGroupNames;
 
     const {
-        defaultProxies,
-        defaultProxiesDirect,
-        defaultSelector,
-        defaultFallback,
-        frontProxySelector,
-    } = buildBaseLists({
-        landing,
-        lowCostNodes,
-        highCostNodes,
-        countryGroupNames: allCountryGroupNames,
-        nonLandingNodes,
-        regexFilter,
-    });
-
-    const {
         groups: countryProxyGroups,
         lowCostSubGroups: countryLowCostGroups,
         highCostSubGroups: countryHighCostGroups,
@@ -157,6 +142,25 @@ function main(config: ClashConfig): ClashConfig {
         splitHighCost,
         highCostNodes,
         autoSplit,
+    });
+
+    const countryLowCostGroupNames = countryLowCostGroups.map((g) => g.name);
+
+    const {
+        defaultProxies,
+        defaultProxiesDirect,
+        defaultSelector,
+        defaultFallback,
+        frontProxySelector,
+        staticResourcesProxies,
+    } = buildBaseLists({
+        landing,
+        lowCostNodes,
+        highCostNodes,
+        countryGroupNames: allCountryGroupNames,
+        nonLandingNodes,
+        regexFilter,
+        countryLowCostGroupNames,
     });
 
     const proxyGroups = buildProxyGroups({
@@ -177,6 +181,7 @@ function main(config: ClashConfig): ClashConfig {
         defaultSelector,
         defaultFallback,
         frontProxySelector,
+        staticResourcesProxies,
     });
 
     const globalProxies = proxyGroups.map((item) => String(item.name));

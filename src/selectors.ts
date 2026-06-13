@@ -20,6 +20,7 @@ export function buildBaseLists({
     nonLandingNodes,
     regexFilter,
     smallCountryGroupName,
+    countryLowCostGroupNames,
 }: BuildBaseListsInput): BaseLists {
     const allCountryGroupNames = smallCountryGroupName
         ? [...countryGroupNames, smallCountryGroupName]
@@ -66,11 +67,23 @@ export function buildBaseLists({
         !regexFilter && nonLandingNodes
     );
 
+    const staticResourcesProxies = buildList(
+        PROXY_GROUPS.SELECT,
+        landing && PROXY_GROUPS.LANDING,
+        allCountryGroupNames,
+        lowCost && PROXY_GROUPS.LOW_COST,
+        countryLowCostGroupNames,
+        highCost && PROXY_GROUPS.HIGH_COST,
+        PROXY_GROUPS.MANUAL,
+        "DIRECT"
+    );
+
     return {
         defaultProxies,
         defaultProxiesDirect,
         defaultSelector,
         defaultFallback,
         frontProxySelector,
+        staticResourcesProxies,
     };
 }

@@ -242,6 +242,7 @@ export function buildProxyGroups({
     defaultSelector,
     defaultFallback,
     frontProxySelector,
+    staticResourcesProxies,
 }: BuildProxyGroupsInput): ProxyGroup[] {
     const hasTW = countries.includes("台湾");
     const hasHK = countries.includes("香港");
@@ -284,7 +285,7 @@ export function buildProxyGroups({
             name: PROXY_GROUPS.STATIC_RESOURCES,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png`,
             type: "select",
-            proxies: defaultProxies,
+            proxies: staticResourcesProxies,
         },
         {
             name: PROXY_GROUPS.AI_SERVICE,
@@ -311,6 +312,18 @@ export function buildProxyGroups({
             proxies: defaultProxies,
         },
         {
+            name: PROXY_GROUPS.BING,
+            icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Bing.png`,
+            type: "select",
+            proxies: defaultProxies,
+        },
+        {
+            name: PROXY_GROUPS.ONEDRIVE,
+            icon: `${CDN_URL}/gh/powerfullz/override-rules@master/icons/Onedrive.png`,
+            type: "select",
+            proxies: defaultProxies,
+        },
+        {
             name: PROXY_GROUPS.MICROSOFT,
             icon: `${CDN_URL}/gh/powerfullz/override-rules@master/icons/Microsoft_Copilot.png`,
             type: "select",
@@ -319,6 +332,12 @@ export function buildProxyGroups({
         {
             name: PROXY_GROUPS.XBOX,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Xbox.png`,
+            type: "select",
+            proxies: defaultProxies,
+        },
+        {
+            name: PROXY_GROUPS.GAMING,
+            icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Game.png`,
             type: "select",
             proxies: defaultProxies,
         },
