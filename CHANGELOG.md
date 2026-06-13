@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.3](https://github.com/powerfullz/override-rules/compare/src-v2.5.2...src-v2.5.3) (2026-06-13)
+
+
+### Features
+
+- 新增 Bing/OneDrive/游戏平台分流规则及静态资源低倍率子组支持 ([14e621d](https://github.com/powerfullz/override-rules/commit/14e621d4d3a56a91fb020f85ca29f5c6f821a653))
 ## [2.5.2](https://github.com/powerfullz/override-rules/compare/src-v2.5.1...src-v2.5.2) (2026-06-12)
 
 
