@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.6](https://github.com/powerfullz/override-rules/compare/src-v2.5.5...src-v2.5.6) (2026-06-13)
+
+
+### Bug Fixes
+
+- Auto-split 节点丢失、移除死代码、同步 README 与注释 ([d160eb8](https://github.com/powerfullz/override-rules/commit/d160eb838e8b9f9fa44f644c02142fc09477ee51))
 ## [2.5.5](https://github.com/powerfullz/override-rules/compare/src-v2.5.4...src-v2.5.5) (2026-06-13)
 
 
