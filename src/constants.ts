@@ -65,6 +65,7 @@ export const HIGH_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
 /**
  * 各地区的元数据：`weight` 决定在代理组列表中的排列顺序（值越小越靠前，未设置则排末尾）；
  * `pattern` 是用于匹配节点名称的正则字符串；`icon` 为策略组图标 URL。
+ * 注意：pattern 必须以 `(?i)` 开头以保证 Mihomo filter 模式大小写不敏感，与 node_parser 中 `RegExp(..., "i")` 一致。
  */
 export const countriesMeta: Record<string, CountryMeta> = {
     香港: {

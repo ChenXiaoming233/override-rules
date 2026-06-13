@@ -33,6 +33,7 @@ export function parseSmallCountries(
 
 const COUNTRY_REGEX_MAP = Object.fromEntries(
     Object.entries(countriesMeta).map(([country, meta]) => {
+        // 剥离 (?i) 前缀，由 new RegExp(..., "i") 标志位提供大小写不敏感
         return [country, new RegExp(meta.pattern.replace(/^\(\?i\)/, ""))];
     })
 ) as Record<string, RegExp>;

@@ -24,6 +24,8 @@ export function buildBaseLists({
     const lowCost = lowCostNodes.length > 0 || regexFilter;
     const highCost = highCostNodes.length > 0 || regexFilter;
 
+    // 落地节点、地区分组、全局低/高倍率组 — defaultSelector / defaultProxies /
+    // defaultProxiesDirect 共享此尾部，staticResourcesProxies 不适用。
     const commonGroups = [
         landing && PROXY_GROUPS.LANDING,
         countryGroupNames,
