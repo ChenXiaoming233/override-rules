@@ -21,7 +21,6 @@ const baseRules = [
     `GEOSITE,epicgames,${PROXY_GROUPS.GAMING}`,
     `GEOSITE,playstation,${PROXY_GROUPS.GAMING}`,
     `GEOSITE,nintendo,${PROXY_GROUPS.GAMING}`,
-    `GEOSITE,battlenet,${PROXY_GROUPS.GAMING}`,
     `GEOSITE,ea,${PROXY_GROUPS.GAMING}`,
     `GEOSITE,ubisoft,${PROXY_GROUPS.GAMING}`,
     `GEOSITE,riot,${PROXY_GROUPS.GAMING}`,
