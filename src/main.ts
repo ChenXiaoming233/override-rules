@@ -111,13 +111,35 @@ function main(config: ClashConfig): ClashConfig {
 
         switch (groupType) {
             case 0:
-                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "select", ...smallCountryNodeSource };
+                smallCountryGroup = {
+                    name: smallCountryGroupName,
+                    icon: OTHER_ICON,
+                    type: "select",
+                    ...smallCountryNodeSource,
+                };
                 break;
             case 1:
-                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "url-test", url: "https://cp.cloudflare.com/generate_204", interval: 60, tolerance: 20, ...smallCountryNodeSource };
+                smallCountryGroup = {
+                    name: smallCountryGroupName,
+                    icon: OTHER_ICON,
+                    type: "url-test",
+                    url: "https://cp.cloudflare.com/generate_204",
+                    interval: 60,
+                    tolerance: 20,
+                    ...smallCountryNodeSource,
+                };
                 break;
             case 2:
-                smallCountryGroup = { name: smallCountryGroupName, icon: OTHER_ICON, type: "load-balance", strategy: "sticky-sessions", url: "https://cp.cloudflare.com/generate_204", interval: 60, tolerance: 20, ...smallCountryNodeSource };
+                smallCountryGroup = {
+                    name: smallCountryGroupName,
+                    icon: OTHER_ICON,
+                    type: "load-balance",
+                    strategy: "sticky-sessions",
+                    url: "https://cp.cloudflare.com/generate_204",
+                    interval: 60,
+                    tolerance: 20,
+                    ...smallCountryNodeSource,
+                };
                 break;
         }
     }

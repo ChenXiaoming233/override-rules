@@ -65,14 +65,6 @@ function buildGroupByType({
 }
 
 /**
- * 将两个正则模式合并为一个"同时匹配两者"的正则。
- * 用于 regexFilter 模式下生成低速子组的 filter 表达式。
- */
-function combinePatterns(p1: string, p2: string): string {
-    return `(?i)^(?=.*(?:${p1}))(?=.*(?:${p2})).*$`;
-}
-
-/**
  * 为每个地区生成对应的代理组配置。
  * @param input - 构建地区代理组所需的输入参数
  * @param input.countries - 需要生成代理组的地区名称列表（不含后缀）
@@ -104,8 +96,8 @@ export function buildCountryProxyGroups({
     const highCostSubGroups: ProxyGroup[] = [];
     const autoSubGroups: ProxyGroup[] = [];
     const hasAutoSplit = autoSplit && groupType === 0;
-    const lowCostSet = (splitLowCost || hasAutoSplit) ? new Set(lowCostNodes) : null;
-    const highCostSet = (splitHighCost || hasAutoSplit) ? new Set(highCostNodes) : null;
+    const lowCostSet = splitLowCost || hasAutoSplit ? new Set(lowCostNodes) : null;
+    const highCostSet = splitHighCost || hasAutoSplit ? new Set(highCostNodes) : null;
 
     const nodesByCountry: Record<string, string[]> | null =
         !regexFilter || splitLowCost || splitHighCost || hasAutoSplit
@@ -185,7 +177,12 @@ export function buildCountryProxyGroups({
                         name: `${country}${NODE_SUFFIX}`,
                         icon,
                         groupType,
-                        nodeSource: { proxies: [...subProxies, ...regular] },
+                        nodeSource: (() => {
+                            const merged = [...subProxies, ...regular];
+                            if (hasLowCost && !splitLowCost) merged.push(...lowCost);
+                            if (hasHighCost && !splitHighCost) merged.push(...highCost);
+                            return { proxies: merged };
+                        })(),
                     })
                 );
             } else {

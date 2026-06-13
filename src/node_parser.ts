@@ -14,21 +14,21 @@ import type { ClashConfig, CountryInfoItem } from "./types";
  * @returns 拆分后的小地区列表和常规地区列表
  */
 export function parseSmallCountries(
-  countryInfo: CountryInfoItem[],
-  threshold: number
+    countryInfo: CountryInfoItem[],
+    threshold: number
 ): { small: CountryInfoItem[]; regular: CountryInfoItem[] } {
-  const small: CountryInfoItem[] = [];
-  const regular: CountryInfoItem[] = [];
+    const small: CountryInfoItem[] = [];
+    const regular: CountryInfoItem[] = [];
 
-  for (const item of countryInfo) {
-    if (item.nodes.length <= threshold) {
-      small.push(item);
-    } else {
-      regular.push(item);
+    for (const item of countryInfo) {
+        if (item.nodes.length <= threshold) {
+            small.push(item);
+        } else {
+            regular.push(item);
+        }
     }
-  }
 
-  return { small, regular };
+    return { small, regular };
 }
 
 const COUNTRY_REGEX_MAP = Object.fromEntries(

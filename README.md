@@ -146,22 +146,22 @@ proxies:
 文件命名规则依据支持的开关参数穷举，格式如下：
 
 ```text
-config_gt-{0|1|2}_landing-{0|1}_ipv6-{0|1}_full-{0|1}_keepalive-{0|1}_fakeip-{0|1}_quic-{0|1}_tun-{0|1}.yaml
+config_gt-{0|1|2}_landing-{0|1}_ipv6-{0|1}_full-{0|1}_keepalive-{0|1}_fakeip-{0|1}_quic-{0|1}_tun-{0|1}_litecombine-{0|1}.yaml
 ```
 
 **获取示例（开启 full，其余关闭）：**
 ```text
-https://cdn.jsdelivr.net/gh/powerfullz/override-rules/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0.yaml
+https://cdn.jsdelivr.net/gh/powerfullz/override-rules/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
 **固定版本获取示例：**
 ```text
-https://cdn.jsdelivr.net/gh/powerfullz/override-rules@v0.1.0/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0.yaml
+https://cdn.jsdelivr.net/gh/powerfullz/override-rules@v0.1.0/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
 如果使用镜像：
 ```text
-https://git.l3zc.com/powerfullz/override-rules/raw/branch/dist/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0.yaml
+https://git.l3zc.com/powerfullz/override-rules/raw/branch/dist/yamls/config_gt-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
 *注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。*
