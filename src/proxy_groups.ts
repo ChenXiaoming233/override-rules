@@ -30,7 +30,7 @@ interface BuildGroupByTypeInput {
  * 根据代理组类型生成对应的代理组配置。
  * 将 groupType 映射为具体的类型字段（select/url-test/load-balance），
  * 并与节点来源字段合并，消除各处重复的 switch 逻辑。
-*/
+ */
 export function buildGroupByType({
     name,
     icon,
@@ -70,7 +70,7 @@ export function buildGroupByType({
 function classifyCountryNodes(
     allNodes: string[],
     lowCostSet: Set<string> | null,
-    highCostSet: Set<string> | null,
+    highCostSet: Set<string> | null
 ): { lowCost: string[]; highCost: string[]; regular: string[] } {
     let regular = allNodes;
     const lowCost: string[] = [];
@@ -152,7 +152,9 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
+                              ...(landing
+                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
+                                  : {}),
                           },
                 })
             );
@@ -160,7 +162,11 @@ export function buildCountryProxyGroups({
         }
 
         const allNodes = nodesByCountry[country] ?? [];
-        const { lowCost, highCost, regular } = classifyCountryNodes(allNodes, lowCostSet, highCostSet);
+        const { lowCost, highCost, regular } = classifyCountryNodes(
+            allNodes,
+            lowCostSet,
+            highCostSet
+        );
 
         const hasLowCost = lowCost.length > 0;
         const hasHighCost = highCost.length > 0;
@@ -177,7 +183,9 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing ? { "exclude-filter": LANDING_NODE_MATCHER.pattern } : {}),
+                              ...(landing
+                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
+                                  : {}),
                           },
                 })
             );

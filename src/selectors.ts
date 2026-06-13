@@ -24,33 +24,31 @@ export function buildBaseLists({
     const lowCost = lowCostNodes.length > 0 || regexFilter;
     const highCost = highCostNodes.length > 0 || regexFilter;
 
-    const defaultSelector = buildList(
-        PROXY_GROUPS.AUTO,
-        PROXY_GROUPS.FALLBACK,
+    const commonGroups = [
         landing && PROXY_GROUPS.LANDING,
         countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
         highCost && PROXY_GROUPS.HIGH_COST,
+    ];
+
+    const defaultSelector = buildList(
+        PROXY_GROUPS.AUTO,
+        PROXY_GROUPS.FALLBACK,
+        ...commonGroups,
         PROXY_GROUPS.MANUAL,
         "DIRECT"
     );
 
     const defaultProxies = buildList(
         PROXY_GROUPS.SELECT,
-        landing && PROXY_GROUPS.LANDING,
-        countryGroupNames,
-        lowCost && PROXY_GROUPS.LOW_COST,
-        highCost && PROXY_GROUPS.HIGH_COST,
+        ...commonGroups,
         PROXY_GROUPS.MANUAL,
         "DIRECT"
     );
 
     const defaultProxiesDirect = buildList(
         "DIRECT",
-        landing && PROXY_GROUPS.LANDING,
-        countryGroupNames,
-        lowCost && PROXY_GROUPS.LOW_COST,
-        highCost && PROXY_GROUPS.HIGH_COST,
+        ...commonGroups,
         PROXY_GROUPS.SELECT,
         PROXY_GROUPS.MANUAL
     );
@@ -65,11 +63,8 @@ export function buildBaseLists({
 
     const staticResourcesProxies = buildList(
         PROXY_GROUPS.SELECT,
-        landing && PROXY_GROUPS.LANDING,
-        countryGroupNames,
-        lowCost && PROXY_GROUPS.LOW_COST,
         countryLowCostGroupNames,
-        highCost && PROXY_GROUPS.HIGH_COST,
+        ...commonGroups,
         PROXY_GROUPS.MANUAL,
         "DIRECT"
     );

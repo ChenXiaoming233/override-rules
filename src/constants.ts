@@ -120,7 +120,8 @@ export const countriesMeta: Record<string, CountryMeta> = {
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/United_Kingdom.png`,
     },
     澳大利亚: {
-        pattern: "(?i)澳洲|澳大利亚|\\b(?:AU|au)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Australia|🇦🇺",
+        pattern:
+            "(?i)澳洲|澳大利亚|\\b(?:AU|au)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Australia|🇦🇺",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Australia.png`,
     },
     德国: {
@@ -148,7 +149,8 @@ export const countriesMeta: Record<string, CountryMeta> = {
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/India.png`,
     },
     马来西亚: {
-        pattern: "(?i)马来西亚|马来|\\b(?:MY|my)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Malaysia|🇲🇾",
+        pattern:
+            "(?i)马来西亚|马来|\\b(?:MY|my)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Malaysia|🇲🇾",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Malaysia.png`,
     },
     阿根廷: {
@@ -176,7 +178,8 @@ export const countriesMeta: Record<string, CountryMeta> = {
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Turkey.png`,
     },
     乌克兰: {
-        pattern: "(?i)乌克兰|基辅|\\b(?:UA|ua)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Ukraine|KBP|🇺🇦",
+        pattern:
+            "(?i)乌克兰|基辅|\\b(?:UA|ua)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Ukraine|KBP|🇺🇦",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Ukraine.png`,
     },
 };
