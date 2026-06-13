@@ -211,7 +211,6 @@ export interface BuildBaseListsInput {
     countryGroupNames: string[];
     nonLandingNodes: string[];
     regexFilter: boolean;
-    smallCountryGroupName?: string;
     countryLowCostGroupNames?: string[];
 }
 

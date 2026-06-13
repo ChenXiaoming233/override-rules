@@ -19,12 +19,8 @@ export function buildBaseLists({
     countryGroupNames,
     nonLandingNodes,
     regexFilter,
-    smallCountryGroupName,
     countryLowCostGroupNames,
 }: BuildBaseListsInput): BaseLists {
-    const allCountryGroupNames = smallCountryGroupName
-        ? [...countryGroupNames, smallCountryGroupName]
-        : countryGroupNames;
     const lowCost = lowCostNodes.length > 0 || regexFilter;
     const highCost = highCostNodes.length > 0 || regexFilter;
 
@@ -32,7 +28,7 @@ export function buildBaseLists({
         PROXY_GROUPS.AUTO,
         PROXY_GROUPS.FALLBACK,
         landing && PROXY_GROUPS.LANDING,
-        allCountryGroupNames,
+        countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
         highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.MANUAL,
@@ -42,7 +38,7 @@ export function buildBaseLists({
     const defaultProxies = buildList(
         PROXY_GROUPS.SELECT,
         landing && PROXY_GROUPS.LANDING,
-        allCountryGroupNames,
+        countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
         highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.MANUAL,
@@ -52,17 +48,17 @@ export function buildBaseLists({
     const defaultProxiesDirect = buildList(
         "DIRECT",
         landing && PROXY_GROUPS.LANDING,
-        allCountryGroupNames,
+        countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
         highCost && PROXY_GROUPS.HIGH_COST,
         PROXY_GROUPS.SELECT,
         PROXY_GROUPS.MANUAL
     );
 
-    const defaultFallback = buildList(landing && PROXY_GROUPS.LANDING, allCountryGroupNames);
+    const defaultFallback = buildList(landing && PROXY_GROUPS.LANDING, countryGroupNames);
 
     const frontProxySelector = buildList(
-        allCountryGroupNames,
+        countryGroupNames,
         "DIRECT",
         !regexFilter && nonLandingNodes
     );
@@ -70,7 +66,7 @@ export function buildBaseLists({
     const staticResourcesProxies = buildList(
         PROXY_GROUPS.SELECT,
         landing && PROXY_GROUPS.LANDING,
-        allCountryGroupNames,
+        countryGroupNames,
         lowCost && PROXY_GROUPS.LOW_COST,
         countryLowCostGroupNames,
         highCost && PROXY_GROUPS.HIGH_COST,
