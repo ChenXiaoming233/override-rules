@@ -21,7 +21,7 @@ https://github.com/powerfullz/override-rules
 
 import { CDN_URL, OTHER_ICON, PROXY_GROUPS, countriesMeta } from "./constants";
 import { buildFeatureFlags } from "./args";
-import { buildCountryProxyGroups, buildProxyGroups } from "./proxy_groups";
+import { buildCountryProxyGroups, buildProxyGroups, buildGroupByType } from "./proxy_groups";
 import {
     getCountryGroupNames,
     parseCountries,
@@ -109,39 +109,12 @@ function main(config: ClashConfig): ClashConfig {
             ? { proxies: smallCountryNodes }
             : { "include-all": true as const, filter: "(?i)" + smallCountryPatterns.join("|") };
 
-        switch (groupType) {
-            case 0:
-                smallCountryGroup = {
-                    name: smallCountryGroupName,
-                    icon: OTHER_ICON,
-                    type: "select",
-                    ...smallCountryNodeSource,
-                };
-                break;
-            case 1:
-                smallCountryGroup = {
-                    name: smallCountryGroupName,
-                    icon: OTHER_ICON,
-                    type: "url-test",
-                    url: "https://cp.cloudflare.com/generate_204",
-                    interval: 60,
-                    tolerance: 20,
-                    ...smallCountryNodeSource,
-                };
-                break;
-            case 2:
-                smallCountryGroup = {
-                    name: smallCountryGroupName,
-                    icon: OTHER_ICON,
-                    type: "load-balance",
-                    strategy: "sticky-sessions",
-                    url: "https://cp.cloudflare.com/generate_204",
-                    interval: 60,
-                    tolerance: 20,
-                    ...smallCountryNodeSource,
-                };
-                break;
-        }
+        smallCountryGroup = buildGroupByType({
+            name: smallCountryGroupName,
+            icon: OTHER_ICON,
+            groupType,
+            nodeSource: smallCountryNodeSource,
+        });
     }
 
     const allCountryGroupNames = smallCountryGroupName

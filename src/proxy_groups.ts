@@ -30,8 +30,8 @@ interface BuildGroupByTypeInput {
  * 根据代理组类型生成对应的代理组配置。
  * 将 groupType 映射为具体的类型字段（select/url-test/load-balance），
  * 并与节点来源字段合并，消除各处重复的 switch 逻辑。
- */
-function buildGroupByType({
+*/
+export function buildGroupByType({
     name,
     icon,
     groupType,
