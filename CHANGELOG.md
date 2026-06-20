@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.9](https://github.com/powerfullz/override-rules/compare/src-v2.5.8...src-v2.5.9) (2026-06-20)
+
+
+### Bug Fixes
+
+- 再一次修复 rules.ts 中的语法错误 ([607a897](https://github.com/powerfullz/override-rules/commit/607a897e1a9d328a134d071ea80e699d7d881716))
 ## [2.5.8](https://github.com/powerfullz/override-rules/compare/src-v2.5.7...src-v2.5.8) (2026-06-20)
 
 
