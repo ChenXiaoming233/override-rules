@@ -71,9 +71,11 @@ flowchart TD
 |------|----------|------|
 | 输入 | — | 上游订阅传入的代理节点列表 (`config.proxies`) 与用户提供的 URL 覆写参数 (`$arguments`) |
 | 参数解析 | `src/args.ts` | 将原始字符串参数转换为类型安全的 `FeatureFlags` 对象，设置各项开关的默认值 |
-| 节点分类 | `src/node_parser.ts` | 将节点按三个维度分类：落地/非落地 (`parseNodesByLanding`)、所属国家/地区 (`parseCountries`)、低价节点 (`parseLowCost`)；提取活跃国家名称 (`getActiveCountryNames`) |
-| 配置构建 | `src/selectors.ts` + `src/proxy_groups.ts` | 先生成基础代理选择列表 (`BaseLists`)，再基于这些列表和节点分类结果生成完整的代理组定义（国家/地区代理组已内联于 `buildProxyGroups` 中） |
+| 节点分类 | `src/node_parser.ts` | 将节点按四个维度分类：落地/非落地 (`parseNodesByLanding`)、所属国家/地区 (`parseCountries`)、低价节点 (`parseLowCost`)、高倍率节点 (`parseHighCost`)；提取活跃国家名称 (`getActiveCountryNames`) |
+| 配置构建 | `src/selectors.ts` + `src/proxy_groups.ts` | 先生成基础代理选择列表 (`BaseLists`)，再基于这些列表和节点分类结果生成完整的代理组定义|
 | 最终组装 | `src/main.ts` | 将代理组、路由规则 (`buildRules`)、DNS 配置 (`buildDns`) 与 TUN 配置 (`buildTunConfig`) 拼装为最终输出的 `ClashConfig` |
+
+> **Fork 差异**：本 fork 保留独立的 `buildCountryProxyGroups()` 函数处理国家代理组（含 lowcost/highcost/auto-split 逻辑），而非内联于 `buildProxyGroups()` 中。上游原版中已内联。
 
 ---
 
@@ -83,16 +85,16 @@ flowchart TD
 |------|------|----------|
 | `src/args.ts` | URL 参数解析与默认值处理 | `buildFeatureFlags()`, `parseGroupType()` |
 | `src/constants.ts` | 常量集中管理（国家元数据、代理组名称、节点匹配器、CDN 地址等） | `countriesMeta`, `NODE_SUFFIX`, `PROXY_GROUPS`, `LOW_COST_NODE_MATCHER`, `LANDING_NODE_MATCHER` |
-| `src/node_parser.ts` | 多维度节点分类与过滤 | `parseNodesByLanding()`, `parseCountries()`, `parseLowCost()`, `getActiveCountryNames()` |
+| `src/node_parser.ts` | 多维度节点分类与过滤 | `parseNodesByLanding()`, `parseCountries()`, `parseLowCost()`, `parseHighCost()`, `parseSmallCountries()`, `getActiveCountryNames()` |
 | `src/selectors.ts` | 代理选择列表构建（各策略组的基础选项列表） | `buildBaseLists()` |
-| `src/proxy_groups.ts` | 代理组定义生成（含内联国家代理组） | `buildProxyGroups()`, `buildGroupByType()` |
+| `src/proxy_groups.ts` | 代理组定义生成 | `buildCountryProxyGroups()`, `buildProxyGroups()`, `buildGroupByType()` |
 | `src/rules.ts` | 路由规则构建 | `buildRules()` |
 | `src/dns.ts` | DNS 配置构建 | `buildDns()`, `snifferConfig` |
 | `src/tun.ts` | TUN 模式配置构建 | `buildTunConfig()` |
 | `src/rule_providers.ts` | Rule Provider 定义（外部规则集引用） | `ruleProviders` |
-| `src/types.ts` | TypeScript 类型与接口定义 | `FeatureFlags`, `ProxyNode`, `ProxyGroup`, `ClashConfig`, `BaseLists`, `BuildBaseListsInput`, `BuildProxyGroupsInput` 等 |
+| `src/types.ts` | TypeScript 类型与接口定义 | `FeatureFlags`, `ProxyNode`, `ProxyGroup`, `ClashConfig`, `BaseLists`, `BuildBaseListsInput`, `BuildProxyGroupsInput`, `BuildCountryProxyGroupsInput` 等 |
 | `src/utils.ts` | 通用工具函数 | `buildList()`, `parseBool()`, `parseNumber()`, `isNotNull()` |
-| `scripts/yaml_generator/generator.ts` | 静态 YAML 覆写文件生成器 | 穷举参数组合，生成 `yamls/` 目录下的 192 个 YAML 配置文件 |
+| `scripts/yaml_generator/generator.ts` | 静态 YAML 覆写文件生成器 | 穷举参数组合，生成 `yamls/` 目录下的 384 个 YAML 配置文件 |
 
 ---
 
@@ -103,23 +105,27 @@ flowchart TD
 `dialer-proxy` 在 Mihomo 链式代理中表示当前节点通过指定代理拨号。脚本据此自动区分：
 
 - 包含 `dialer-proxy: "前置代理"` 字段的节点 → **落地节点**（目标/出口节点），归入「落地节点」组
+
 - 其余所有节点 → **非落地节点**（中继/普通节点），归入国家地区分组和「前置代理」组
 
 变量 `landing` 为 `true` 当且仅当两类节点均存在（`landingNodes.length > 0 && nonLandingNodes.length > 0`）。这保证了中继代理组仅在真正需要时才生成，避免了空组或配置不一致的问题。
 
 ### 节点分类
 
-节点在进入配置构建阶段前，经过三个独立维度的分类：
+节点在进入配置构建阶段前，经过四个独立维度的分类：
 
 1. **落地/非落地** — 决定节点归属的代理组类型。当 `landing = true` 时，后续的国家和低价节点分类只扫描非落地节点（即落地节点不参与按国家分发）。
 2. **国家/地区** — 通过正则匹配节点名称中的地理位置关键字，将节点归入对应的国家/地区分组。匹配规则定义在 `countriesMeta` 中。
 3. **低价节点** — 匹配特定正则 (`LOW_COST_NODE_MATCHER`) 的节点归入低价策略组，供用户按需选用。
+4. **高倍率节点** — 匹配特定正则 (`HIGH_COST_NODE_MATCHER`) 且不属于低倍率的节点归入高倍率策略组。
 
-这三个分类维度相互独立，构建阶段通过组合它们来生成完整的代理组树。
+这四个分类维度相互独立，构建阶段通过组合它们来生成完整的代理组树。
 
 ### 数据流
 
 - **减少中间类型**：`parseCountries()` 直接返回 `Record<string, ProxyNode[]>` 而非引入额外的中间结构。`getActiveCountryNames()` 返回纯净的国家名称（不含 `"节点"` 后缀）。国家代理组的构建逻辑已内联于 `buildProxyGroups()` 中，不再需要独立的 `buildCountryProxyGroups()` 函数。
+
+> **Fork 差异**：本 fork 因保留 lowcost-split / highcost-split / auto-split 功能，保留独立的 `buildCountryProxyGroups()` 函数。split 逻辑在其中通过 `classifyCountryNodes()` 对每个国家的节点进行低/高/常规三类拆分，生成子组并注入主组。此复杂度当前不适合内联。
 - **`NODE_SUFFIX` 仅在展示层添加**：`"节点"` 后缀（如「香港」→「香港节点」）只在 `buildBaseLists()` 和 `buildProxyGroups()` 中拼接，分类层完全不涉及此概念。
 - **数据优于标志**：接收节点信息的参数统一使用具体数据（如 `landingNodes: ProxyNode[]`、`countryNodes: Record<string, ProxyNode[]>`）而非布尔值。布尔标志（如 `landing`）由数据推导得出，保证了判定依据的可追溯性。
 
@@ -139,9 +145,12 @@ flowchart TD
 | `fakeip` | true / false | 2 |
 | `quic` | true / false | 2 |
 | `tun` | true / false | 2 |
+| `lite-combine` | 0（禁用）/ ≥1（阈值） | 2 |
 | `grouptype` | select / url-test / load-balance | 3 |
 
-共计 2⁶ × 3 = 192 个 YAML 文件。`landing` 不在 FLAGS 中——YAML 生成器使用 `fake_proxies.json` 中的模拟节点数据自动判定。生成时固定启用 `regex: true`，因为静态配置无法预知实际订阅的节点名称。
+共计 2⁷ × 3 = 384 个 YAML 文件。
+
+> **Fork 差异**：上游 FLAGS 为 6 个参数（不含 `lite-combine`，产量 192）。本 fork 保留 `lite-combine`，FLAGS 为 7 个参数。`landing` 不在 FLAGS 中——YAML 生成器使用 `fake_proxies.json` 中的模拟节点数据自动判定。生成时固定启用 `regex: true`，因为静态配置无法预知实际订阅的节点名称。
 
 ---
 
