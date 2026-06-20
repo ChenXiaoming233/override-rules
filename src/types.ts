@@ -182,11 +182,6 @@ export interface CountryMeta {
     icon: string;
 }
 
-export interface CountryInfoItem {
-    country: string;
-    nodes: ProxyNode[];
-}
-
 export interface CaseInsensitiveNodeMatcher {
     source: string;
     regex: RegExp;
@@ -218,7 +213,6 @@ export interface BuildCountryProxyGroupsInput {
     countryNodes: Record<string, ProxyNode[]>;
     groupType: GroupType;
     regexFilter: boolean;
-    countryInfo?: CountryInfoItem[];
     splitLowCost: boolean;
     lowCostNodes: ProxyNode[];
     splitHighCost: boolean;
