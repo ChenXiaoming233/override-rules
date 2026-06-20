@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.5.11](https://github.com/powerfullz/override-rules/compare/src-v2.5.10...src-v2.5.11) (2026-06-20)
+
+
+### Chores
+
+- Update dev dependencies ([00aa632](https://github.com/powerfullz/override-rules/commit/00aa632a0a090b1b6bb11846a9af27d699ec7af4))
+
+
+### Documentation
+
+- 更新 ARCHITECTURE.md 文档 ([15b7248](https://github.com/powerfullz/override-rules/commit/15b7248fb715c79a931cbb5ca3778188eb17cf46))
+
+
+### Other
+
+- 同步上游新增 docs/ARCHITECTURE.md ([fc45dce](https://github.com/powerfullz/override-rules/commit/fc45dce22e387fb8e0e94cc833d936f70bd10245))
+
+
+### Refactoring
+
+- 移除 CountryInfoItem 接口及相关字段 ([bcffeb7](https://github.com/powerfullz/override-rules/commit/bcffeb758e629fc39106eb3b4f6f82c826a55362))
 ## [2.5.10](https://github.com/powerfullz/override-rules/compare/src-v2.5.9...src-v2.5.10) (2026-06-20)
 
 
@@ -72,12 +93,17 @@
 ### Bug Fixes
 
 - 将自动子节点组移动至整个代理的末尾 ([81bcae9](https://github.com/powerfullz/override-rules/commit/81bcae92d1bf7dad1ec1d9e5cf8e8f8c39ebecb4))
-## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.1) (2026-06-12)
+## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.5.0...src-v2.5.1) (2026-06-12)
 
 
 ### Features
 
 - 新增地区节点数较少时合并为其他节点 ([c4e7fe8](https://github.com/powerfullz/override-rules/commit/c4e7fe8b319a7b505258c036cb1fc756515faf37))
+## [2.5.0](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.0) (2026-06-12)
+
+
+### Features
+
 - 新增 select 模式下地区节点组创建自动选择子组 ([523311c](https://github.com/powerfullz/override-rules/commit/523311cb955b292188d8a2df1bf0543cc58c76fe))
 ## [2.4.9](https://github.com/powerfullz/override-rules/compare/src-v2.4.8...src-v2.4.9) (2026-06-12)
 
