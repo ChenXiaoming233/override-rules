@@ -1,7 +1,6 @@
 export interface ScriptArgs {
     grouptype?: string;
     loadbalance?: string;
-    landing?: string;
     ipv6?: string;
     full?: string;
     keepalive?: string;
@@ -20,7 +19,6 @@ export type GroupType = 0 | 1 | 2;
 
 export interface FeatureFlags {
     groupType: GroupType;
-    landing: boolean;
     ipv6Enabled: boolean;
     fullConfig: boolean;
     keepAliveEnabled: boolean;
@@ -184,11 +182,6 @@ export interface CountryMeta {
     icon: string;
 }
 
-export interface CountryInfoItem {
-    country: string;
-    nodes: string[];
-}
-
 export interface CaseInsensitiveNodeMatcher {
     source: string;
     regex: RegExp;
@@ -206,24 +199,24 @@ export interface BaseLists {
 
 export interface BuildBaseListsInput {
     landing: boolean;
-    lowCostNodes: string[];
-    highCostNodes: string[];
-    countryGroupNames: string[];
-    nonLandingNodes: string[];
+    lowCostNodes: ProxyNode[];
+    highCostNodes: ProxyNode[];
+    countryNames: string[];
+    nonLandingNodes: ProxyNode[];
     regexFilter: boolean;
     countryLowCostGroupNames?: string[];
 }
 
 export interface BuildCountryProxyGroupsInput {
-    countries: string[];
     landing: boolean;
+    countries: string[];
+    countryNodes: Record<string, ProxyNode[]>;
     groupType: GroupType;
     regexFilter: boolean;
-    countryInfo: CountryInfoItem[];
     splitLowCost: boolean;
-    lowCostNodes: string[];
+    lowCostNodes: ProxyNode[];
     splitHighCost: boolean;
-    highCostNodes: string[];
+    highCostNodes: ProxyNode[];
     autoSplit: boolean;
 }
 
@@ -232,14 +225,15 @@ export interface BuildProxyGroupsInput {
     regexFilter: boolean;
     groupType: GroupType;
     countries: string[];
+    countryNodes: Record<string, ProxyNode[]>;
     countryProxyGroups: ProxyGroup[];
     countryLowCostGroups: ProxyGroup[];
     countryHighCostGroups: ProxyGroup[];
     countryAutoGroups: ProxyGroup[];
     smallCountryGroup?: ProxyGroup | null;
-    lowCostNodes: string[];
-    highCostNodes: string[];
-    landingNodes: string[];
+    lowCostNodes: ProxyNode[];
+    highCostNodes: ProxyNode[];
+    landingNodes: ProxyNode[];
     defaultProxies: string[];
     defaultProxiesDirect: string[];
     defaultSelector: string[];

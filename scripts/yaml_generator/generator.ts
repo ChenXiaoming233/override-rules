@@ -38,16 +38,7 @@ const OUTPUT_DIR = path.join(BASE_DIR, "yamls");
 // 注意：lowcost-split / highcost-split / auto-split 等参数未列入 FLAGS，
 // 生成器固定使用默认值（splitLowCost=true, splitHighCost=false, autoSplit=false）。
 // regex 同样硬编码为 true，以确保 YAML 产物不受 JS 端参数影响。
-const FLAGS = [
-    "landing",
-    "ipv6",
-    "full",
-    "keepalive",
-    "fakeip",
-    "quic",
-    "tun",
-    "lite-combine",
-] as const;
+const FLAGS = ["ipv6", "full", "keepalive", "fakeip", "quic", "tun", "lite-combine"] as const;
 
 type FlagName = (typeof FLAGS)[number];
 type FlagArgs = Record<FlagName, boolean>;
@@ -55,7 +46,7 @@ type FlagArgs = Record<FlagName, boolean>;
 const GROUPTYPE_VALUES = [0, 1, 2] as const;
 type GroupTypeValue = (typeof GROUPTYPE_VALUES)[number];
 
-type GeneratorScriptArgs = { [K in Exclude<FlagName, "lite-combine">]: boolean } & {
+type GeneratorScriptArgs = { [K in Exclude<FlagName, "lite-combine" | "landing">]: boolean } & {
     regex: true;
     grouptype: string;
     "lite-combine": string;
@@ -73,7 +64,6 @@ interface VmSandbox extends Record<string, unknown> {
 }
 
 const FLAG_SHORT_NAMES: Record<FlagName, string> = {
-    landing: "landing",
     ipv6: "ipv6",
     full: "full",
     keepalive: "keepalive",
@@ -114,7 +104,6 @@ function runConvert(baseConfig: ClashConfig, args: ComboArgs): ClashConfig {
     const code = readFileSync(CONVERT_FILE, "utf-8");
     const sandbox: VmSandbox = {
         $arguments: {
-            landing: args.flags.landing,
             ipv6: args.flags.ipv6,
             full: args.flags.full,
             keepalive: args.flags.keepalive,
