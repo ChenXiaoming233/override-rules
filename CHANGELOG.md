@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.5.7](https://github.com/powerfullz/override-rules/compare/src-v2.5.6...src-v2.5.7) (2026-06-20)
+
+
+### Bug Fixes
+
+- 为 countriesMeta 的所有 pattern 添加 (?i) 大小写不敏感修饰符 ([a304b61](https://github.com/powerfullz/override-rules/commit/a304b6123de8f73ce5786503c55bdf9b6c329d22))
+
+
+### Documentation
+
+- 补充必要性注释 ([b0d445c](https://github.com/powerfullz/override-rules/commit/b0d445c7033de513a0de93e2ede18c048061b27a))
+
+
+### Features
+
+- 国内 CDN 流量直连，避免不必要的代理开销 ([41c689a](https://github.com/powerfullz/override-rules/commit/41c689a1893ae9b2b42b9020fdefa71e1f59b9a1))
+
+
+### Refactoring
+
+- 提取 selectors.ts 中 buildBaseLists 的重复公共条目 ([0ffd51b](https://github.com/powerfullz/override-rules/commit/0ffd51bdd400a29ca76e500e2840cd64093fab98))
+- 重构 buildCountryProxyGroups，提取分类辅助函数并扁平化循环 ([489d893](https://github.com/powerfullz/override-rules/commit/489d893d3ec9ed22f3a042473086e5bb4f307c7b))
+- 导出 buildGroupByType 并在 main.ts 中复用 ([d7defa6](https://github.com/powerfullz/override-rules/commit/d7defa6e3a5ef73283ed36147b1aee7d8e152e50))
+- 移除 selectors.ts 和 types.ts 中 smallCountryGroupName 死代码 ([2de896a](https://github.com/powerfullz/override-rules/commit/2de896aebb30767fa6e282f23bc03a01baabfa50))
 ## [2.5.6](https://github.com/powerfullz/override-rules/compare/src-v2.5.5...src-v2.5.6) (2026-06-13)
 
 
