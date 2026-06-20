@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.10](https://github.com/powerfullz/override-rules/compare/src-v2.5.9...src-v2.5.10) (2026-06-20)
+
+
+### Other
+
+- 同步上游落地节点自动检测 ([a70dabe](https://github.com/powerfullz/override-rules/commit/a70dabe2499cf39e2cc498d232171567214a07e6))
 ## [2.5.9](https://github.com/powerfullz/override-rules/compare/src-v2.5.8...src-v2.5.9) (2026-06-20)
 
 
@@ -66,17 +72,12 @@
 ### Bug Fixes
 
 - 将自动子节点组移动至整个代理的末尾 ([81bcae9](https://github.com/powerfullz/override-rules/commit/81bcae92d1bf7dad1ec1d9e5cf8e8f8c39ebecb4))
-## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.5.0...src-v2.5.1) (2026-06-12)
+## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.1) (2026-06-12)
 
 
 ### Features
 
 - 新增地区节点数较少时合并为其他节点 ([c4e7fe8](https://github.com/powerfullz/override-rules/commit/c4e7fe8b319a7b505258c036cb1fc756515faf37))
-## [2.5.0](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.0) (2026-06-12)
-
-
-### Features
-
 - 新增 select 模式下地区节点组创建自动选择子组 ([523311c](https://github.com/powerfullz/override-rules/commit/523311cb955b292188d8a2df1bf0543cc58c76fe))
 ## [2.4.9](https://github.com/powerfullz/override-rules/compare/src-v2.4.8...src-v2.4.9) (2026-06-12)
 
