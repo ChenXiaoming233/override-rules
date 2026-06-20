@@ -5,7 +5,7 @@ https://github.com/powerfullz/override-rules
 支持的传入参数：
 - grouptype: 地区代理组类型（0=select 手动选择, 1=url-test 自动测速, 2=load-balance 负载均衡，默认 0）
   - 向后兼容：若未传 grouptype 但传了 loadbalance，则 loadbalance=true 映射为 grouptype=2，loadbalance=false 映射为 grouptype=1
-- landing: 启用落地节点功能（如机场家宽/星链/落地分组，默认 false）
+- landing: auto-detected from nodes with `dialer-proxy` field; no user parameter needed
 - ipv6: 启用 IPv6 支持（默认 false）
 - tun: 启用 TUN 模式（默认 false）
 - full: 输出完整配置（适合纯内核启动，默认 false）
@@ -23,13 +23,12 @@ import { CDN_URL, OTHER_ICON, PROXY_GROUPS, countriesMeta } from "./constants";
 import { buildFeatureFlags } from "./args";
 import { buildCountryProxyGroups, buildProxyGroups, buildGroupByType } from "./proxy_groups";
 import {
-    getCountryGroupNames,
+    getActiveCountryNames,
     parseCountries,
     parseLowCost,
     parseHighCost,
     parseNodesByLanding,
     parseSmallCountries,
-    stripNodeSuffix,
 } from "./node_parser";
 import { buildRules } from "./rules";
 import { ruleProviders } from "./rule_providers";
@@ -59,7 +58,6 @@ function getRawArgs(): ScriptArgs {
 const rawArgs = getRawArgs();
 const {
     groupType,
-    landing,
     ipv6Enabled,
     fullConfig,
     keepAliveEnabled,
@@ -75,32 +73,40 @@ const {
 } = buildFeatureFlags(rawArgs);
 
 function main(config: ClashConfig): ClashConfig {
-    const countryInfo = parseCountries(config, landing);
-    const lowCostNodes = parseLowCost(config);
-    const highCostNodes = parseHighCost(config, lowCostNodes);
-
-    // Split off small countries if liteCombine is enabled
-    let smallCountryNodes: string[] = [];
-    let smallCountryPatterns: string[] = [];
-    let filteredCountryInfo = countryInfo;
-
-    if (liteCombine > 0) {
-        const { small, regular } = parseSmallCountries(countryInfo, liteCombine);
-        smallCountryNodes = small.flatMap((item) => item.nodes);
-        smallCountryPatterns = small
-            .map((item) => countriesMeta[item.country]?.pattern)
-            .filter(Boolean) as string[];
-        filteredCountryInfo = regular;
+    if (!config.proxies || !Array.isArray(config.proxies)) {
+        throw new Error("[powerfullz 的覆写脚本] 错误：Clash 配置中缺少有效的 proxies 字段");
     }
 
-    const countryGroupNames = getCountryGroupNames(filteredCountryInfo, countryThreshold);
-    const countries = stripNodeSuffix(countryGroupNames);
+    // 自动检测落地节点：当订阅中同时存在带 dialer-proxy 和不带的节点时激活
+    const { landingNodes, nonLandingNodes } = parseNodesByLanding(config.proxies);
+    const landing = landingNodes.length > 0 && nonLandingNodes.length > 0;
 
-    const { landingNodes, nonLandingNodes } = landing
-        ? parseNodesByLanding(config)
-        : { landingNodes: [], nonLandingNodes: [] };
+    // 根据落地状态选择解析节点范围：激活时只对非落地节点分组
+    const nodesToParse = landing ? nonLandingNodes : config.proxies;
+    const countryNodes = parseCountries(nodesToParse);
+    const lowCostNodes = parseLowCost(nodesToParse);
+    const highCostNodes = parseHighCost(nodesToParse, lowCostNodes);
 
-    // Build the merged "\u5176\u4ed6\u8282\u70b9" proxy group from small countries
+    // lite-combine: 拆分小地区节点
+    let smallCountryNodes: ProxyGroup["proxies"] = [];
+    let smallCountryPatterns: string[] = [];
+    let filteredCountryNodes = countryNodes;
+
+    if (liteCombine > 0) {
+        const { small, regular } = parseSmallCountries(countryNodes, liteCombine);
+        smallCountryNodes = Object.values(small)
+            .flat()
+            .map((n) => n.name)
+            .filter(Boolean) as string[];
+        smallCountryPatterns = Object.keys(small)
+            .map((c) => countriesMeta[c]?.pattern)
+            .filter(Boolean) as string[];
+        filteredCountryNodes = regular;
+    }
+
+    const countryNames = getActiveCountryNames(filteredCountryNodes, countryThreshold);
+
+    // 构建"其他节点"合并代理组
     let smallCountryGroup: ProxyGroup | null = null;
     const smallCountryGroupName = smallCountryNodes.length > 0 ? PROXY_GROUPS.OTHER : undefined;
 
@@ -117,21 +123,17 @@ function main(config: ClashConfig): ClashConfig {
         });
     }
 
-    const allCountryGroupNames = smallCountryGroupName
-        ? [...countryGroupNames, smallCountryGroupName]
-        : countryGroupNames;
-
     const {
         groups: countryProxyGroups,
         lowCostSubGroups: countryLowCostGroups,
         highCostSubGroups: countryHighCostGroups,
         autoSubGroups: countryAutoGroups,
     } = buildCountryProxyGroups({
-        countries,
+        countries: countryNames,
         landing,
         groupType,
         regexFilter,
-        countryInfo: filteredCountryInfo,
+        countryNodes: filteredCountryNodes,
         splitLowCost,
         lowCostNodes,
         splitHighCost,
@@ -152,7 +154,7 @@ function main(config: ClashConfig): ClashConfig {
         landing,
         lowCostNodes,
         highCostNodes,
-        countryGroupNames: allCountryGroupNames,
+        countryNames,
         nonLandingNodes,
         regexFilter,
         countryLowCostGroupNames,
@@ -162,7 +164,8 @@ function main(config: ClashConfig): ClashConfig {
         landing,
         regexFilter,
         groupType,
-        countries,
+        countries: countryNames,
+        countryNodes: filteredCountryNodes,
         countryProxyGroups,
         countryLowCostGroups,
         countryHighCostGroups,
