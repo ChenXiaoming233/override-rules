@@ -2,32 +2,20 @@
 
 [![](https://data.jsdelivr.com/v1/package/gh/powerfullz/override-rules/badge?style=rounded)](https://www.jsdelivr.com/package/gh/powerfullz/override-rules)
 
+由 ChenXiaoming233 进行了修改。
+
 本仓库为 Mihomo/Substore 设计，提供高效、灵活的覆写规则（**不建议用于 Stash**）。核心特色如下：
 
-* 集成 [SukkaW/Surge](https://github.com/SukkaW/Surge)、[217heidai/adblockfilters](https://github.com/217heidai/adblockfilters) 与 [TG-Twilight/AWAvenue-Ads-Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) 等优质规则，兼容性强，覆盖面广。
-* 针对 Truth Social、E-Hentai、TikTok、加密货币等场景，新增专用分流规则，满足多样化需求。
-* 精简冗余，结构清晰，维护便捷。
-* 深度融合 [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat) GeoSite/GeoIP，分流更精准。
-* IP 规则默认添加 `no-resolve`，有效减少本地 DNS 解析，提升速度与隐私。
-* 动态覆写：自动识别节点国家/地区，仅生成实际存在的分组，节点名称实时枚举，配置更智能。
+- 集成 [SukkaW/Surge](https://github.com/SukkaW/Surge)、[217heidai/adblockfilters](https://github.com/217heidai/adblockfilters) 与 [TG-Twilight/AWAvenue-Ads-Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) 等优质规则，兼容性强，覆盖面广。
+- 针对 Truth Social、E-Hentai、TikTok、加密货币等场景，新增专用分流规则，满足多样化需求。
+- 精简冗余，结构清晰，维护便捷。
+- 深度融合 [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat) GeoSite/GeoIP，分流更精准。
+- IP 规则默认添加 `no-resolve`，有效减少本地 DNS 解析，提升速度与隐私。
+- 动态覆写：自动识别节点国家/地区，仅生成实际存在的分组，节点名称实时枚举，配置更智能。
 
 > 本项目为本人自用，欢迎交流建议（Issue/PR）。如无特殊反馈，将优先满足个人需求与体验优化。
 
 [点击访问 Forgejo 上的镜像](https://git.l3zc.com/powerfullz/override-rules)
-
-### AFF
-
-#### FlowerCloud
-
-[注册链接](https://api-flowercloud.com/aff.php?aff=4352)
-
-目前我的主力机场，也是一家老牌一线机场了，线路扎实，冗余足够，实验性节点0.2倍率，部分地区的高级节点是家宽落地，用起来还是很舒服的。
-
-#### 星岛梦
-
-[注册链接](https://luics.xdmvipaff.cc/#/?code=MMB4xSlc)
-
-星岛梦是一家 2025 年 12 月刚开业的机场，机场主在测试的时候就来找我了，我因此有幸从早期测试阶段便开始关注，见证了机场主熬夜修线路换落地的过程，目前体验还不错。算上日常折扣性价比还可以，大家可以月付体验一下。
 
 ### 使用方法
 
@@ -54,19 +42,19 @@
 
 目前支持的参数：
 
-*   `grouptype`：地区代理组类型（0=手动选择 select，1=自动测速 url-test，2=负载均衡 load-balance，默认 0）
-*   `ipv6`：启用 IPv6 支持（默认 false）
-*   `full`：生成完整配置（适合纯内核启动，默认 false）
-*   `keepalive`：启用 TCP Keep Alive（默认 false）[^fn2]
-*   `fakeip`：DNS 增强模式使用 `fake-ip` 而不是 `redir-host`（开启后可能有助于解决 TUN 模式无法上网的问题；未传参时默认 `true`，显式传 `false` 时使用 `redir-host`）
-*   `quic`：允许 QUIC 流量（UDP 443，默认 false）[^quic]
-*   `regex`：各国家/地区代理组改用 `include-all` + 正则过滤模式，由 Mihomo 内核在运行时按正则动态筛选节点，而非在脚本执行时枚举节点名称（默认 false）[^regex]
-*   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）
-*   `threshold`：国家/地区节点数量小于该值时不显示分组（默认 0）
-*   `lite-combine`：将节点数不超过该值的地区合并到统一的"其他节点"代理组中，放置在地区节点组的最后。设为 0 禁用此功能（默认 1）
-*   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立的低倍率子组（如"新加坡 低倍率"），默认 true
-*   `highcost-split`：是否将各地区内的高倍率节点拆分为独立的高倍率子组（如"新加坡 高倍率"），默认 false
-*   `auto-split`：当 `grouptype` 为 select（0）时，为每个地区自动创建 url-test 类型子组（如"新加坡 自动"），包含该地区除低倍率/高倍率外的所有节点。主组同时保留各子组引用和单个节点条目（默认 false）
+- `grouptype`：地区代理组类型（0=手动选择 select，1=自动测速 url-test，2=负载均衡 load-balance，默认 0）
+- `ipv6`：启用 IPv6 支持（默认 false）
+- `full`：生成完整配置（适合纯内核启动，默认 false）
+- `keepalive`：启用 TCP Keep Alive（默认 false）[^fn2]
+- `fakeip`：DNS 增强模式使用 `fake-ip` 而不是 `redir-host`（开启后可能有助于解决 TUN 模式无法上网的问题；未传参时默认 `true`，显式传 `false` 时使用 `redir-host`）
+- `quic`：允许 QUIC 流量（UDP 443，默认 false）[^quic]
+- `regex`：各国家/地区代理组改用 `include-all` + 正则过滤模式，由 Mihomo 内核在运行时按正则动态筛选节点，而非在脚本执行时枚举节点名称（默认 false）[^regex]
+- `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）
+- `threshold`：国家/地区节点数量小于该值时不显示分组（默认 0）
+- `lite-combine`：将节点数不超过该值的地区合并到统一的"其他节点"代理组中，放置在地区节点组的末尾（默认 1）
+- `lowcost-split`：是否将各地区内的低倍率节点拆分为独立的低倍率子组（如"新加坡 低倍率"）（默认 true）
+- `highcost-split`：是否将各地区内的高倍率节点拆分为独立的高倍率子组（如"新加坡 高倍率"）（默认 false）
+- `auto-split`：当 `grouptype` 为 select（0）时，是否为每个地区创建 url-test 类型的子组（如"新加坡 自动"），包含该地区除低倍率 / 高倍率外的所有节点；主组同时保留各子组引用和单个节点条目（默认 false）
 
 > **向后兼容**：旧的 `loadbalance` 参数仍然可用。当 `grouptype` 未指定时，`loadbalance=true` 等价于 `grouptype=2`，`loadbalance=false` 等价于 `grouptype=1`。
 
@@ -104,6 +92,8 @@ https://raw.githubusercontent.com/powerfullz/override-rules/refs/heads/preview/c
 ### 关于部分特殊代理组的说明
 
 **静态资源**：包含所有常见静态资源 CDN 域名、对象存储域名。大部分网站的静态资源（如图片、视频、音频、字体、JS、CSS）都有独立域名、不设置风控措施、不设置鉴权，这些静态资源可以使用 IP 不一定干净（例如 IDC 类 IP）、但是带宽更大、延时更低、而且有和大部分主流 CDN（如 Cloudflare、Akamai、Fastly、EdgeCast）在 IXP 有互联的网络出口。一般就实践经验来看，在正常上网中这部分域名产生的流量占据约 70% 左右。如果你在使用商业性质的远端策略服务提供商、且该服务上提供了低倍率节点，你可以将这部分域名分流至低倍率节点以节省流量。[^fn1]
+
+> **Fork 差异:** 本 fork 针对静态资源额外加入了对国内 CDN 流量的直连分流，减少流量消耗的同时加速加载。
 
 [^fn1]: 来源：[我有特别的 Surge 配置和使用技巧](https://blog.skk.moe/post/i-have-my-unique-surge-setup/)
 
@@ -145,21 +135,24 @@ config_gt-{0|1|2}_ipv6-{0|1}_full-{0|1}_keepalive-{0|1}_fakeip-{0|1}_quic-{0|1}_
 ```
 
 **获取示例（开启 full，其余关闭）：**
+
 ```text
 https://cdn.jsdelivr.net/gh/powerfullz/override-rules/yamls/config_gt-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
 **固定版本获取示例：**
+
 ```text
 https://cdn.jsdelivr.net/gh/powerfullz/override-rules@v0.1.0/yamls/config_gt-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
 如果使用镜像：
+
 ```text
 https://git.l3zc.com/powerfullz/override-rules/raw/branch/dist/yamls/config_gt-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0_litecombine-0.yaml
 ```
 
-*注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。*
+_注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。_
 
 ### 如何自定义与贡献
 
