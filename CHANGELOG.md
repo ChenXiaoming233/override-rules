@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.5.12](https://github.com/powerfullz/override-rules/compare/src-v2.5.11...src-v2.5.12) (2026-07-05)
+
+
+### Bug Fixes
+
+- Temporarily remove `console.log` as it appears to be buggy on clash verge rev ([9b2dbba](https://github.com/powerfullz/override-rules/commit/9b2dbba1be27cbed49262ff643116ae28a84613c))
+- 为 GEOIP 规则补充禁用解析 ([b36dc37](https://github.com/powerfullz/override-rules/commit/b36dc37a9b91c7d81ee5b6592fab41336ede5ab3))
+
+
+### Chores
+
+- Change speedurl to cloudflare ([fdcb0fb](https://github.com/powerfullz/override-rules/commit/fdcb0fbae16c8220ec2ab9ce5628fa9f28b54361))
+
+
+### Documentation
+
+- 更新静态资源分流说明 ([04dcbf6](https://github.com/powerfullz/override-rules/commit/04dcbf6e0d3968420365ac1968d3b6b14b79a986))
+- 更新 README.MD ([207292b](https://github.com/powerfullz/override-rules/commit/207292b17cea96c06669dbb9457ff17f6716650e))
+
+
+### Features
+
+- 同步上游 exclude-filter 冷门地区排除机制 ([91f14bc](https://github.com/powerfullz/override-rules/commit/91f14bca2101db8ed11e5969b8f73250ddedad29))
+
+
+### Refactoring
+
+- Types in src/types.ts for improved clarity and organization ([3dfccca](https://github.com/powerfullz/override-rules/commit/3dfcccabd7928a39fc8f1514fac14653f1be4ac5))
+- 移除冗余的 LANDING_NODE_MATCHER 及相关 filter/exclude-filter ([39b9444](https://github.com/powerfullz/override-rules/commit/39b94442072af6b32169e381c1aa989c159fe2eb))
+- 简化 loadbalance 兼容范围，保留本地默认值 ([59480a8](https://github.com/powerfullz/override-rules/commit/59480a8d255fa93479840ddbfa68628d2668a987))
+- Add SPEEDTEST_URL constant ([ecdfb83](https://github.com/powerfullz/override-rules/commit/ecdfb8351681fbf86bff89054e3b9c7070899642))
+
+
+### Styling
+
+- Npm run format ([8437fa8](https://github.com/powerfullz/override-rules/commit/8437fa8c7158a0b78bb8334f5202110ef3f05e7b))
 ## [2.5.11](https://github.com/powerfullz/override-rules/compare/src-v2.5.10...src-v2.5.11) (2026-06-20)
 
 
@@ -63,47 +99,21 @@
 - 重构 buildCountryProxyGroups，提取分类辅助函数并扁平化循环 ([489d893](https://github.com/powerfullz/override-rules/commit/489d893d3ec9ed22f3a042473086e5bb4f307c7b))
 - 导出 buildGroupByType 并在 main.ts 中复用 ([d7defa6](https://github.com/powerfullz/override-rules/commit/d7defa6e3a5ef73283ed36147b1aee7d8e152e50))
 - 移除 selectors.ts 和 types.ts 中 smallCountryGroupName 死代码 ([2de896a](https://github.com/powerfullz/override-rules/commit/2de896aebb30767fa6e282f23bc03a01baabfa50))
-## [2.5.6](https://github.com/powerfullz/override-rules/compare/src-v2.5.5...src-v2.5.6) (2026-06-13)
+## [2.5.6](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.6) (2026-06-13)
 
 
 ### Bug Fixes
 
 - Auto-split 节点丢失、移除死代码、同步 README 与注释 ([d160eb8](https://github.com/powerfullz/override-rules/commit/d160eb838e8b9f9fa44f644c02142fc09477ee51))
-## [2.5.5](https://github.com/powerfullz/override-rules/compare/src-v2.5.4...src-v2.5.5) (2026-06-13)
-
-
-### Bug Fixes
-
 - 将 SteamFix 规则移至游戏平台 GEOSITE 规则之前 ([0d4d522](https://github.com/powerfullz/override-rules/commit/0d4d522d54916cbb163e0129e97f57ce6afffa4e))
-## [2.5.4](https://github.com/powerfullz/override-rules/compare/src-v2.5.3...src-v2.5.4) (2026-06-13)
-
-
-### Bug Fixes
-
 - 移除 battlenet GEOSITE 规则 ([78a3a2f](https://github.com/powerfullz/override-rules/commit/78a3a2ff145a07c37382b4ce4b228c1a6d3c8bdf))
-## [2.5.3](https://github.com/powerfullz/override-rules/compare/src-v2.5.2...src-v2.5.3) (2026-06-13)
+- 将自动子节点组移动至整个代理的末尾 ([81bcae9](https://github.com/powerfullz/override-rules/commit/81bcae92d1bf7dad1ec1d9e5cf8e8f8c39ebecb4))
 
 
 ### Features
 
 - 新增 Bing/OneDrive/游戏平台分流规则及静态资源低倍率子组支持 ([14e621d](https://github.com/powerfullz/override-rules/commit/14e621d4d3a56a91fb020f85ca29f5c6f821a653))
-## [2.5.2](https://github.com/powerfullz/override-rules/compare/src-v2.5.1...src-v2.5.2) (2026-06-12)
-
-
-### Bug Fixes
-
-- 将自动子节点组移动至整个代理的末尾 ([81bcae9](https://github.com/powerfullz/override-rules/commit/81bcae92d1bf7dad1ec1d9e5cf8e8f8c39ebecb4))
-## [2.5.1](https://github.com/powerfullz/override-rules/compare/src-v2.5.0...src-v2.5.1) (2026-06-12)
-
-
-### Features
-
 - 新增地区节点数较少时合并为其他节点 ([c4e7fe8](https://github.com/powerfullz/override-rules/commit/c4e7fe8b319a7b505258c036cb1fc756515faf37))
-## [2.5.0](https://github.com/powerfullz/override-rules/compare/src-v2.4.9...src-v2.5.0) (2026-06-12)
-
-
-### Features
-
 - 新增 select 模式下地区节点组创建自动选择子组 ([523311c](https://github.com/powerfullz/override-rules/commit/523311cb955b292188d8a2df1bf0543cc58c76fe))
 ## [2.4.9](https://github.com/powerfullz/override-rules/compare/src-v2.4.8...src-v2.4.9) (2026-06-12)
 
