@@ -6,6 +6,7 @@ export const LOW_COST_SUFFIX = " 低倍率";
 export const AUTO_SUFFIX = " 自动";
 export const CDN_URL = "https://cdn.jsdelivr.net";
 export const OTHER_ICON = `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Multi_Flag.png`;
+export const SPEEDTEST_URL = "https://cp.cloudflare.com";
 
 export const PROXY_GROUPS = {
     SELECT: "选择代理",
@@ -50,10 +51,6 @@ export const PROXY_GROUPS = {
 
 export const LOW_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
     String.raw`0\.[0-5]|低倍率|省流|实验性`
-);
-
-export const LANDING_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
-    String.raw`家宽|家庭宽带|商宽|商业宽带|星链|Starlink|落地`
 );
 
 export const HIGH_COST_SUFFIX = " 高倍率";
@@ -107,6 +104,7 @@ export const countriesMeta: Record<string, CountryMeta> = {
         pattern:
             "(?i)美国|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|纽约|亚特兰大|迈阿密|华盛顿|\\b(?:US|us)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|United States|UnitedStates|UNITED STATES|USA|America|AMERICA|JFK|EWR|IAD|ATL|ORD|MIA|NYC|LAX|SFO|SEA|DFW|SJC|🇺🇸",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/United_States.png`,
+        excludePattern: "美属|亚美尼亚|圣多美|普林西比",
     },
     加拿大: {
         weight: 55,
@@ -136,18 +134,22 @@ export const countriesMeta: Record<string, CountryMeta> = {
         pattern:
             "(?i)法国|法|巴黎|马赛|Marseille|\\b(?:FR|fr)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|France|FRANCE|FRA|CDG|MRS|🇫🇷",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/France.png`,
+        excludePattern: "法属|布基纳法索|法罗",
     },
     俄罗斯: {
         pattern: "(?i)俄罗斯|俄|\\b(?:RU|ru)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Russia|🇷🇺",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Russia.png`,
+        excludePattern: "埃塞俄比亚|白俄罗斯",
     },
     泰国: {
         pattern: "(?i)泰国|泰|\\b(?:TH|th)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|Thailand|🇹🇭",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Thailand.png`,
+        excludePattern: "巴泰",
     },
     印度: {
         pattern: "(?i)印度|\\b(?:IN|in)(?:[-_ ]?\\d+(?:[-_ ]?[A-Za-z]{2,})?)?\\b|India|🇮🇳",
         icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/India.png`,
+        excludePattern: "印度洋",
     },
     马来西亚: {
         pattern:

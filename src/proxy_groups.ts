@@ -1,6 +1,6 @@
 import {
     CDN_URL,
-    LANDING_NODE_MATCHER,
+    SPEEDTEST_URL,
     LOW_COST_NODE_MATCHER,
     HIGH_COST_NODE_MATCHER,
     NODE_SUFFIX,
@@ -45,7 +45,7 @@ export function buildGroupByType({
                 name,
                 icon,
                 type: "url-test",
-                url: "https://cp.cloudflare.com/generate_204",
+                url: SPEEDTEST_URL,
                 interval: 60,
                 tolerance: 20,
                 ...nodeSource,
@@ -56,7 +56,7 @@ export function buildGroupByType({
                 icon,
                 type: "load-balance",
                 strategy: "sticky-sessions",
-                url: "https://cp.cloudflare.com/generate_204",
+                url: SPEEDTEST_URL,
                 interval: 60,
                 tolerance: 20,
                 ...nodeSource,
@@ -99,7 +99,7 @@ function classifyCountryNodes(
  */
 export function buildCountryProxyGroups({
     countries,
-    landing,
+    //landing,
     groupType,
     regexFilter,
     countryNodes,
@@ -154,8 +154,8 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing
-                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
+                              ...(meta.excludePattern
+                                  ? { "exclude-filter": meta.excludePattern }
                                   : {}),
                           },
                 })
@@ -185,8 +185,8 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing
-                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
+                              ...(meta.excludePattern
+                                  ? { "exclude-filter": meta.excludePattern }
                                   : {}),
                           },
                 })
@@ -276,13 +276,7 @@ export function buildProxyGroups({
                   name: PROXY_GROUPS.FRONT_PROXY,
                   icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Area.png`,
                   type: "select",
-                  ...(regexFilter
-                      ? {
-                            "include-all": true,
-                            "exclude-filter": LANDING_NODE_MATCHER.pattern,
-                            proxies: frontProxySelector,
-                        }
-                      : { proxies: frontProxySelector }),
+                  proxies: frontProxySelector,
               }
             : null,
         landing
@@ -290,9 +284,7 @@ export function buildProxyGroups({
                   name: PROXY_GROUPS.LANDING,
                   icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Airport.png`,
                   type: "select",
-                  ...(regexFilter
-                      ? { "include-all": true, filter: LANDING_NODE_MATCHER.pattern }
-                      : { proxies: landingNodes.map((node) => node.name).filter(isNotNull) }),
+                  proxies: landingNodes.map((node) => node.name).filter(isNotNull),
               }
             : null,
         ...countryProxyGroups,
@@ -468,7 +460,7 @@ export function buildProxyGroups({
             name: PROXY_GROUPS.AUTO,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Auto.png`,
             type: "url-test",
-            url: "https://cp.cloudflare.com/generate_204",
+            url: SPEEDTEST_URL,
             proxies: defaultFallback,
             interval: 60,
             tolerance: 20,
@@ -477,7 +469,7 @@ export function buildProxyGroups({
             name: PROXY_GROUPS.FALLBACK,
             icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Available_1.png`,
             type: "fallback",
-            url: "https://cp.cloudflare.com/generate_204",
+            url: SPEEDTEST_URL,
             proxies: defaultFallback,
             interval: 60,
             tolerance: 20,

@@ -84,7 +84,7 @@ flowchart TD
 | 文件 | 职责 | 关键导出 |
 |------|------|----------|
 | `src/args.ts` | URL 参数解析与默认值处理 | `buildFeatureFlags()`, `parseGroupType()` |
-| `src/constants.ts` | 常量集中管理（国家元数据、代理组名称、节点匹配器、CDN 地址等） | `countriesMeta`, `NODE_SUFFIX`, `PROXY_GROUPS`, `LOW_COST_NODE_MATCHER`, `LANDING_NODE_MATCHER` |
+| `src/constants.ts` | 常量集中管理（国家元数据、代理组名称、节点匹配器、CDN 地址等） | `countriesMeta`, `NODE_SUFFIX`, `PROXY_GROUPS`, `LOW_COST_NODE_MATCHER` |
 | `src/node_parser.ts` | 多维度节点分类与过滤 | `parseNodesByLanding()`, `parseCountries()`, `parseLowCost()`, `parseHighCost()`, `parseSmallCountries()`, `getActiveCountryNames()` |
 | `src/selectors.ts` | 代理选择列表构建（各策略组的基础选项列表） | `buildBaseLists()` |
 | `src/proxy_groups.ts` | 代理组定义生成 | `buildCountryProxyGroups()`, `buildProxyGroups()`, `buildGroupByType()` |

@@ -81,10 +81,7 @@ export interface FallbackProxyGroup extends BaseProxyGroup {
 }
 
 export type ProxyGroup =
-    | SelectProxyGroup
-    | UrlTestProxyGroup
-    | LoadBalanceProxyGroup
-    | FallbackProxyGroup;
+    SelectProxyGroup | UrlTestProxyGroup | LoadBalanceProxyGroup | FallbackProxyGroup;
 
 export interface SnifferProtocolConfig {
     ports: number[];
@@ -180,6 +177,7 @@ export interface CountryMeta {
     weight?: number;
     pattern: string;
     icon: string;
+    excludePattern?: string;
 }
 
 export interface CaseInsensitiveNodeMatcher {
