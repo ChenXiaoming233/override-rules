@@ -99,7 +99,7 @@ function classifyCountryNodes(
  */
 export function buildCountryProxyGroups({
     countries,
-    landing,
+    //landing,
     groupType,
     regexFilter,
     countryNodes,
@@ -154,7 +154,9 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                             ...(meta.excludePattern ? { "exclude-filter": meta.excludePattern } : {}),
+                              ...(meta.excludePattern
+                                  ? { "exclude-filter": meta.excludePattern }
+                                  : {}),
                           },
                 })
             );
@@ -183,7 +185,9 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                             ...(meta.excludePattern ? { "exclude-filter": meta.excludePattern } : {}),
+                              ...(meta.excludePattern
+                                  ? { "exclude-filter": meta.excludePattern }
+                                  : {}),
                           },
                 })
             );

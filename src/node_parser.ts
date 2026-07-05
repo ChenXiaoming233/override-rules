@@ -31,11 +31,11 @@ const COUNTRY_REGEX_MAP = Object.fromEntries(
     })
 ) as Record<string, RegExp>;
 
- const COUNTRY_EXCLUDE_MAP = Object.fromEntries(
-     Object.entries(countriesMeta)
-         .filter(([, meta]) => meta.excludePattern)
-         .map(([country, meta]) => [country, new RegExp(meta.excludePattern!)])
- ) as Record<string, RegExp>;
+const COUNTRY_EXCLUDE_MAP = Object.fromEntries(
+    Object.entries(countriesMeta)
+        .filter(([, meta]) => meta.excludePattern)
+        .map(([country, meta]) => [country, new RegExp(meta.excludePattern!)])
+) as Record<string, RegExp>;
 
 /**
  * 筛选出所有低价节点。

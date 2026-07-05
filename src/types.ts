@@ -81,10 +81,7 @@ export interface FallbackProxyGroup extends BaseProxyGroup {
 }
 
 export type ProxyGroup =
-    | SelectProxyGroup
-    | UrlTestProxyGroup
-    | LoadBalanceProxyGroup
-    | FallbackProxyGroup;
+    SelectProxyGroup | UrlTestProxyGroup | LoadBalanceProxyGroup | FallbackProxyGroup;
 
 export interface SnifferProtocolConfig {
     ports: number[];
