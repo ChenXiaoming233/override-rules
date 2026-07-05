@@ -6,6 +6,7 @@ export const LOW_COST_SUFFIX = " 低倍率";
 export const AUTO_SUFFIX = " 自动";
 export const CDN_URL = "https://cdn.jsdelivr.net";
 export const OTHER_ICON = `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Multi_Flag.png`;
+export const SPEEDTEST_URL = "https://cp.cloudflare.com";
 
 export const PROXY_GROUPS = {
     SELECT: "选择代理",
