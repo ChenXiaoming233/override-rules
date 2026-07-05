@@ -31,6 +31,12 @@ const COUNTRY_REGEX_MAP = Object.fromEntries(
     })
 ) as Record<string, RegExp>;
 
+ const COUNTRY_EXCLUDE_MAP = Object.fromEntries(
+     Object.entries(countriesMeta)
+         .filter(([, meta]) => meta.excludePattern)
+         .map(([country, meta]) => [country, new RegExp(meta.excludePattern!)])
+ ) as Record<string, RegExp>;
+
 /**
  * 筛选出所有低价节点。
  * @param nodes - 节点数组，当链式代理激活时为 nonLandingNodes，否则为全部节点
@@ -96,6 +102,7 @@ export function parseCountries(nodes: ProxyNode[]): Record<string, ProxyNode[]> 
 
         for (const [country, regex] of Object.entries(COUNTRY_REGEX_MAP)) {
             if (!regex.test(name)) continue;
+            if (COUNTRY_EXCLUDE_MAP[country]?.test(name)) continue;
 
             if (!countryNodes[country]) {
                 countryNodes[country] = [];

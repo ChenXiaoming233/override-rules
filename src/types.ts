@@ -180,6 +180,7 @@ export interface CountryMeta {
     weight?: number;
     pattern: string;
     icon: string;
+    excludePattern?: string;
 }
 
 export interface CaseInsensitiveNodeMatcher {

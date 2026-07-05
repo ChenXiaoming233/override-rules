@@ -154,6 +154,7 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
+                             ...(meta.excludePattern ? { "exclude-filter": meta.excludePattern } : {}),
                           },
                 })
             );
@@ -182,6 +183,7 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
+                             ...(meta.excludePattern ? { "exclude-filter": meta.excludePattern } : {}),
                           },
                 })
             );
