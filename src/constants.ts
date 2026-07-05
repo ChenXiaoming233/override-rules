@@ -50,11 +50,7 @@ export const PROXY_GROUPS = {
 } as const;
 
 export const LOW_COST_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
-    String.raw`0\.[0-5]|低倍率|省流|实验性`
-);
-
-export const LANDING_NODE_MATCHER = createCaseInsensitiveNodeMatcher(
-    String.raw`家宽|家庭宽带|商宽|商业宽带|星链|Starlink|落地`
+String.raw`0\.[0-5]|低倍率|省流|实验性`
 );
 
 export const HIGH_COST_SUFFIX = " 高倍率";

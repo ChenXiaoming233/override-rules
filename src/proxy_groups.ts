@@ -1,7 +1,6 @@
 import {
     CDN_URL,
     SPEEDTEST_URL,
-    LANDING_NODE_MATCHER,
     LOW_COST_NODE_MATCHER,
     HIGH_COST_NODE_MATCHER,
     NODE_SUFFIX,
@@ -155,9 +154,6 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing
-                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
-                                  : {}),
                           },
                 })
             );
@@ -186,9 +182,6 @@ export function buildCountryProxyGroups({
                         : {
                               "include-all": true as const,
                               filter: meta.pattern,
-                              ...(landing
-                                  ? { "exclude-filter": LANDING_NODE_MATCHER.pattern }
-                                  : {}),
                           },
                 })
             );
@@ -277,13 +270,7 @@ export function buildProxyGroups({
                   name: PROXY_GROUPS.FRONT_PROXY,
                   icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Area.png`,
                   type: "select",
-                  ...(regexFilter
-                      ? {
-                            "include-all": true,
-                            "exclude-filter": LANDING_NODE_MATCHER.pattern,
-                            proxies: frontProxySelector,
-                        }
-                      : { proxies: frontProxySelector }),
+                  proxies: frontProxySelector,
               }
             : null,
         landing
@@ -291,9 +278,7 @@ export function buildProxyGroups({
                   name: PROXY_GROUPS.LANDING,
                   icon: `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color/Airport.png`,
                   type: "select",
-                  ...(regexFilter
-                      ? { "include-all": true, filter: LANDING_NODE_MATCHER.pattern }
-                      : { proxies: landingNodes.map((node) => node.name).filter(isNotNull) }),
+                  proxies: landingNodes.map((node) => node.name).filter(isNotNull),
               }
             : null,
         ...countryProxyGroups,
