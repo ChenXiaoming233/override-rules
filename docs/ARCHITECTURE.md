@@ -72,14 +72,14 @@ flowchart TD
 | `src/catalog/icons.ts` | 代理组图标集中定义 | `ICONS` |
 | `src/catalog/group-names.ts` | 代理组名称与命名辅助 | `PROXY_GROUPS`, `NODE_SUFFIX`, `countryGroupName()` |
 | `src/catalog/countries.ts` | 国家/地区元数据；派生匹配正则 | `countriesMeta`, `countryRegexMap`, `countryExcludeRegexMap` |
-| `src/catalog/low-cost.ts` | 低倍率节点匹配器 | `LOW_COST_NODE_MATCHER` |
+| `src/catalog/low-cost.ts` | 低/高倍率节点匹配器 | `LOW_COST_NODE_MATCHER`, `HIGH_COST_NODE_MATCHER` |
 | `src/catalog/service-groups.ts` | 服务代理组的声明式目录 | `serviceGroups` |
 | `src/catalog/rule-sets.ts` | Rule Provider 注册表（强类型键） | `ruleSets`, `RuleSetKey`, `ruleSet()` |
 | `src/analysis/classify.ts` | 节点多维度分类 | `analyzeNodes()` |
 | `src/analysis/active-countries.ts` | 地区阈值过滤与权重排序 | `getActiveCountryNames()` |
 | `src/domain/proxy-group.ts` | 代理组构造工厂（字段顺序与空候选兜底集中管理） | `buildGroupByType()`, `selectGroup()`, `urlTestGroup()`, `fallbackGroup()` |
 | `src/builders/selectors.ts` | 各策略组的基础候选列表 | `buildBaseLists()` |
-| `src/builders/proxy-groups.ts` | 代理组组装（前置/服务/尾部/地区） | `buildProxyGroups()` |
+| `src/builders/proxy-groups.ts` | 代理组组装（前置/服务/尾部/地区及倍率子组） | `buildProxyGroups()` |
 | `src/builders/rules.ts` | 路由规则构建 | `buildRules()` |
 | `src/builders/rule-set` 引用 | 规则集名称受 `RuleSetKey` 约束，改名可编译期报错 | — |
 | `src/builders/dns.ts` | DNS 配置、fake-ip 过滤与上游字段继承 | `buildDns()` |
@@ -90,7 +90,7 @@ flowchart TD
 | `src/builders/config.ts` | 最终配置组装（含 GLOBAL 组追加） | `assembleConfig()` |
 | `src/utils/primitives.ts` | 通用工具函数 | `buildList()`, `parseBool()`, `parseNumber()`, `isNotNull()` |
 | `src/utils/regex.ts` | 正则匹配工具 | `createCaseInsensitiveNodeMatcher()` |
-| `scripts/yaml_generator/generator.ts` | 静态 YAML 覆写文件生成器 | 穷举参数组合，生成 `yamls/` 目录下的 192 个 YAML 配置文件；支持 `LIMIT_COMBOS` 限制生成数量 |
+| `scripts/yaml_generator/generator.ts` | 静态 YAML 覆写文件生成器 | 穷举参数组合，生成 `yamls/` 目录下的 192 个 YAML 配置文件；固定 `lite-combine=1`，支持 `LIMIT_COMBOS` 限制生成数量 |
 | `tests/` | 轻量单元测试（`node --import tsx --test`） | 覆盖参数解析、节点分类、代理组构造、规则/DNS/TUN、最终组装 |
 
 ---
@@ -116,16 +116,20 @@ flowchart TD
 
 ### 节点分类
 
-节点在进入配置构建阶段前，由 `analyzeNodes()` 经过四个独立维度的分类，产出一个 `NodeAnalysis`：
+节点在进入配置构建阶段前，由 `analyzeNodes()` 经过六个独立维度的分类，产出一个 `NodeAnalysis`：
 
 1. **落地/非落地** — 决定节点归属的代理组类型。当 `landing = true` 时，后续的国家和低价节点分类只扫描非落地节点（即落地节点不参与按国家分发）。
 2. **国家/地区** — 通过正则匹配节点名称中的地理位置关键字，将节点归入对应的国家/地区分组。匹配规则定义在 `countriesMeta` 中。
-3. **低价节点** — 匹配特定正则 (`LOW_COST_NODE_MATCHER`) 的节点归入低价策略组，供用户按需选用。
-4. **Tailscale** — `type: "tailscale"` 的节点单独归入 Tailscale 代理组；只有检测到此类节点时才生成该组及对应的规则。
+3. **低倍率节点** — 匹配 `LOW_COST_NODE_MATCHER` 的节点归入低价策略组，供用户按需选用。
+4. **高倍率节点** — 匹配 `HIGH_COST_NODE_MATCHER` 的节点单独归类；低倍率匹配优先，避免重复归类。
+5. **小地区** — `lite-combine` 阈值内的地区节点合并进「其他节点」，其余地区继续生成地区组。
+6. **Tailscale** — `type: "tailscale"` 的节点单独归入 Tailscale 代理组；只有检测到此类节点时才生成该组及对应的规则。
 
 这些分类维度相互独立，构建阶段通过组合它们来生成完整的代理组树。
 
-分类结果还会派生 `regionLayout`：通过 `threshold` 的地区数 ≥ 2 时为 `grouped`，为每个地区生成 `${地区}节点` 组；不足 2 个时为 `flattened`，不生成任何地区组，`选择代理`、`自动选择`、`故障转移` 直接引用非落地节点。服务组同样按 `regionLayout.groupedCountries` 判断目标地区组是否存在，避免引用已展平的地区组。
+分类结果还会派生 `regionLayout`：移除 `lite-combine` 小地区后，地区数 ≥ 2 时为 `grouped`，为每个地区生成 `${地区}节点` 组；不足 2 个时为 `flattened`，不生成任何地区组，`选择代理`、`自动选择`、`故障转移` 直接引用非落地节点。服务组同样按 `regionLayout.groupedCountries` 判断目标地区组是否存在，避免引用已展平的地区组。
+
+`lowcost-split`、`highcost-split` 与 `auto-split` 控制地区子组；`lite-combine > 0` 时生成「其他节点」组。非 regex 模式显式枚举节点；regex 模式全部改为 `include-all` + `filter` 动态筛选：倍率子组使用「地区 ∩ 倍率」正则，自动子组使用地区正则并排除倍率节点。主地区组再用 `exclude-filter` 排除已拆出的节点，避免重复归属。
 
 ### Tailscale 集成
 
@@ -147,9 +151,10 @@ flowchart TD
 
 所有 URL 参数都有明确的默认值，集中在 `src/args/schema.ts` 的 `ARG_DEFAULTS`，由 `buildFeatureFlags()` 解析并回填。当前默认值包括：
 
-- `grouptype=1`（`url-test`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
+- `grouptype=0`（`select`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
 - `fakeip=true`；
-- `threshold=2`，少于两个节点的地区不会生成地区组；过滤后不足 2 个地区时整体展平；
+- `threshold=0`，少于一个节点的地区不会生成地区组；过滤后不足 2 个地区时整体展平；
+- `lite-combine=1`、`lowcost-split=true`、`highcost-split=false`、`auto-split=false`；
 - `ipv6`、`full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
 
 布尔参数接受 `true`/`false` 和 `1`/`0` 形式。
@@ -178,7 +183,7 @@ flowchart TD
 | `tun` | true / false | 2 |
 | `grouptype` | select / url-test / load-balance | 3 |
 
-共计 2⁶ × 3 = 192 个 YAML 文件。`landing` 不在 FLAGS 中——YAML 生成器使用 `fake_proxies.json` 中的模拟节点数据自动判定。生成时固定启用 `regex: true`，因为静态配置无法预知实际订阅的节点名称。模拟数据覆盖多个地区，因此静态 YAML 产物仍走分组模式；展平分支由单元测试覆盖。
+共计 2⁶ × 3 = 192 个 YAML 文件。`landing` 与 `lite-combine` 不在 FLAGS 中——YAML 生成器使用 `fake_proxies.json` 中的模拟节点数据自动判定落地状态，并固定使用 `lite-combine=1`。生成时固定启用 `regex: true`，因为静态配置无法预知实际订阅的节点名称。模拟数据覆盖多个地区，因此静态 YAML 产物仍走分组模式；展平分支由单元测试覆盖。
 
 ---
 

@@ -49,12 +49,14 @@ function main(config: ClashConfig): ClashConfig {
     }
 
     const flags = buildFeatureFlags(readRawArgs());
-    const nodes = analyzeNodes(config.proxies, flags.countryThreshold);
+    const nodes = analyzeNodes(config.proxies, flags.countryThreshold, flags.liteCombine);
     const lists = buildBaseLists({
         landing: nodes.landing,
         landingNodes: nodes.landingNodes,
         lowCostNodes: nodes.lowCostNodes,
+        highCostNodes: nodes.highCostNodes,
         nonLandingNodes: nodes.nonLandingNodes,
+        smallCountryNodes: nodes.smallCountryNodes,
         regexFilter: flags.regexFilter,
         regions: nodes.regionLayout,
     });

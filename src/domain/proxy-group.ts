@@ -25,7 +25,7 @@ interface BuildGroupByTypeInput {
  * 保证节点来源非空：既没有显式 `proxies`、也没有启用 `include-all` 时，
  * 回退到 `DIRECT`，避免生成空代理组。
  */
-function ensureNonEmptyNodeSource(nodeSource: ProxyGroupNodeSource): ProxyGroupNodeSource {
+export function ensureNonEmptyNodeSource(nodeSource: ProxyGroupNodeSource): ProxyGroupNodeSource {
     if (nodeSource["include-all"]) return nodeSource;
     if (nodeSource.proxies && nodeSource.proxies.length > 0) return nodeSource;
     return { ...nodeSource, proxies: ["DIRECT"] };
@@ -37,7 +37,7 @@ function ensureNonEmptyNodeSource(nodeSource: ProxyGroupNodeSource): ProxyGroupN
  * 字符串视为代理组/节点名称并写入 `proxies`；对象来源（如 `include-all`）
  * 的字段与显式名称合并。结果为空时统一回退到 `DIRECT`。
  */
-function normalizeNodeSource(
+export function normalizeNodeSource(
     candidates: ProxyGroupCandidate[],
     includeAll = false
 ): ProxyGroupNodeSource {
@@ -62,6 +62,26 @@ function normalizeNodeSource(
     if (proxies.length > 0) nodeSource.proxies = proxies;
 
     return ensureNonEmptyNodeSource(nodeSource);
+}
+
+/**
+ * 在 regex 模式下排除同一地区内的低/高倍率节点，
+ * 避免它们同时出现在主地区组和独立倍率子组中。
+ */
+export function excludeNodeNames(
+    nodeSource: ProxyGroupNodeSource,
+    nodes: Array<{ name: string }>
+): ProxyGroupNodeSource {
+    if (!nodeSource["include-all"] || nodes.length === 0) return nodeSource;
+
+    const escapedNames = nodes.map((node) => node.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const excluded = `^(?:${escapedNames.join("|")})$`;
+    const existing = nodeSource["exclude-filter"];
+
+    return {
+        ...nodeSource,
+        "exclude-filter": existing ? `(?:${existing})|${excluded}` : excluded,
+    };
 }
 
 /**
@@ -115,6 +135,23 @@ export function selectGroup(
         icon,
         type: "select",
         ...normalizeNodeSource(candidates, includeAll),
+    };
+}
+
+/** 构造一个只包含指定节点的自动测速组。 */
+export function urlTestGroupWithProxies(
+    name: string,
+    icon: string,
+    proxies: string[]
+): UrlTestProxyGroup {
+    return {
+        name,
+        icon,
+        type: "url-test",
+        url: SPEEDTEST_URL,
+        interval: 60,
+        tolerance: 20,
+        ...ensureNonEmptyNodeSource({ proxies }),
     };
 }
 

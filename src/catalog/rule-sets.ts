@@ -17,6 +17,14 @@ export const ruleSets = {
         url: `${CDN_URL}/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.yaml`,
         path: "./ruleset/ADBlock.yaml",
     },
+    QiufengADBlock: {
+        type: "http",
+        behavior: "domain",
+        format: "yaml",
+        interval: 86400,
+        url: `${CDN_URL}/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml`,
+        path: "./ruleset/AWAvenue-Ads-Rule.yaml",
+    },
     SogouInput: {
         type: "http",
         behavior: "classical",

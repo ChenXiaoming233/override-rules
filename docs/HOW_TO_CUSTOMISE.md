@@ -38,9 +38,13 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
 ```typescript
 // src/args/schema.ts
 export const ARG_DEFAULTS = {
-    groupType: 1, // 0=select，1=url-test，2=load-balance
-    countryThreshold: 2,
+    groupType: 0, // 0=select，1=url-test，2=load-balance
+    countryThreshold: 0,
     fakeIPEnabled: true,
+    splitLowCost: true,
+    splitHighCost: false,
+    autoSplit: false,
+    liteCombine: 1,
 } as const;
 ```
 

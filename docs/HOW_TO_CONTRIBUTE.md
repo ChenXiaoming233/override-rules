@@ -38,6 +38,13 @@
 
    > **建议**：推荐在提交相关修改前，在终端运行 `npm run artifacts` 进行本地全量测试（确保没有编译报错、产生的体积符合预期）。
 
+5. 检查行尾与格式：
+   ```bash
+   npm run format:check
+   ```
+
+   仓库通过 `.gitattributes` 统一使用 LF 行尾。Windows 下请保持 `core.autocrlf=false`，让 `.gitattributes` 与 Prettier 的 `endOfLine: "lf"` 成为唯一行尾规则，避免检出后出现大量伪改动。
+
 ## 📦 提交与 Pull Request (PR) 规范
 
 1. **分离提交**：如果你的变动既包含核心功能的改动，又涉及相关文档的修改，尽量按有意义的逻辑分步提交（多个 Commit）。

@@ -12,7 +12,21 @@ describe("buildRules", () => {
 
     it("启用 quic 时不插入拦截规则", () => {
         const rules = buildRules({ quicEnabled: true, hasTailscale: false });
-        assert.ok(!rules.some((rule) => rule.startsWith("AND,")));
+        assert.ok(!rules.includes("AND,((DST-PORT,443),(NETWORK,UDP)),REJECT"));
+    });
+
+    it("包含 fork 的广告与国内 CDN 直连规则", () => {
+        const rules = buildRules({ quicEnabled: true, hasTailscale: false });
+        assert.ok(rules.includes("RULE-SET,QiufengADBlock,广告拦截"));
+        assert.ok(rules.includes("AND,((RULE-SET,StaticResources),(GEOSITE,cn)),DIRECT"));
+        assert.ok(rules.includes("AND,((RULE-SET,StaticResources),(GEOIP,cn,no-resolve)),DIRECT"));
+        assert.ok(rules.includes("AND,((RULE-SET,CDNResources),(GEOSITE,cn)),DIRECT"));
+        assert.ok(rules.includes("AND,((RULE-SET,CDNResources),(GEOIP,cn,no-resolve)),DIRECT"));
+        assert.ok(rules.includes("AND,((RULE-SET,AdditionalCDNResources),(GEOSITE,cn)),DIRECT"));
+        assert.ok(
+            rules.includes("AND,((RULE-SET,AdditionalCDNResources),(GEOIP,cn,no-resolve)),DIRECT")
+        );
+        assert.ok(rules.includes("GEOSITE,cn,DIRECT"));
     });
 
     it("Tailscale 存在时生成对应分流规则", () => {

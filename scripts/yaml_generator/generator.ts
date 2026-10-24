@@ -43,7 +43,10 @@ type FlagArgs = Record<FlagName, boolean>;
 const GROUPTYPE_VALUES = [0, 1, 2] as const;
 type GroupTypeValue = (typeof GROUPTYPE_VALUES)[number];
 
-type GeneratorScriptArgs = { [K in FlagName]: boolean } & { regex: true; grouptype: string };
+type GeneratorScriptArgs = { [K in FlagName]: boolean } & {
+    regex: true;
+    grouptype: string;
+};
 
 interface ComboArgs {
     flags: FlagArgs;

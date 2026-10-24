@@ -37,4 +37,21 @@ describe("buildFeatureFlags", () => {
     it("fakeip 显式传 false 时关闭", () => {
         assert.equal(buildFeatureFlags({ fakeip: "false" }).fakeIPEnabled, false);
     });
+
+    it("解析 fork 的地区拆分参数", () => {
+        const flags = buildFeatureFlags({
+            "lowcost-split": "false",
+            "highcost-split": "true",
+            "auto-split": "true",
+            "lite-combine": "3",
+        });
+        assert.equal(flags.splitLowCost, false);
+        assert.equal(flags.splitHighCost, true);
+        assert.equal(flags.autoSplit, true);
+        assert.equal(flags.liteCombine, 3);
+    });
+
+    it("lite-combine 为负数时按禁用处理", () => {
+        assert.equal(buildFeatureFlags({ "lite-combine": "-1" }).liteCombine, 0);
+    });
 });

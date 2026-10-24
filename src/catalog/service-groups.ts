@@ -54,13 +54,28 @@ export const serviceGroups: ServiceGroupDef[] = [
         proxies: (ctx) => ctx.lists.defaultProxies,
     },
     {
+        name: PROXY_GROUPS.BING,
+        icon: ICONS.bing,
+        proxies: (ctx) => ctx.lists.defaultProxies,
+    },
+    {
         name: PROXY_GROUPS.MICROSOFT,
         icon: ICONS.microsoft,
         proxies: (ctx) => ctx.lists.defaultProxies,
     },
     {
+        name: PROXY_GROUPS.ONEDRIVE,
+        icon: ICONS.oneDrive,
+        proxies: (ctx) => ctx.lists.defaultProxies,
+    },
+    {
         name: PROXY_GROUPS.XBOX,
         icon: ICONS.xbox,
+        proxies: (ctx) => ctx.lists.defaultProxies,
+    },
+    {
+        name: PROXY_GROUPS.GAMING,
+        icon: ICONS.gaming,
         proxies: (ctx) => ctx.lists.defaultProxies,
     },
     {

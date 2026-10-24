@@ -7,7 +7,7 @@
 
 import { countryExcludeRegexMap, countryRegexMap } from "../catalog/countries";
 import { PROXY_GROUPS } from "../catalog/group-names";
-import { LOW_COST_NODE_MATCHER } from "../catalog/low-cost";
+import { HIGH_COST_NODE_MATCHER, LOW_COST_NODE_MATCHER } from "../catalog/low-cost";
 import { getActiveCountryNames } from "./active-countries";
 import type { NodeAnalysis, ProxyNode, RegionLayout } from "../types/proxy";
 
@@ -66,6 +66,14 @@ function collectLowCost(nodes: ProxyNode[]): ProxyNode[] {
     return nodes.filter((node) => LOW_COST_NODE_MATCHER.regex.test(node.name || ""));
 }
 
+/** 筛选高倍率节点；低倍率节点优先，避免同一节点同时进入两类。 */
+function collectHighCost(nodes: ProxyNode[], lowCostNodes: ProxyNode[]): ProxyNode[] {
+    const lowCostNames = new Set(lowCostNodes.map((node) => node.name));
+    return nodes.filter(
+        (node) => !lowCostNames.has(node.name) && HIGH_COST_NODE_MATCHER.regex.test(node.name || "")
+    );
+}
+
 /** 筛选出所有 Tailscale 节点。 */
 function collectTailscale(nodes: ProxyNode[]): ProxyNode[] {
     return nodes.filter((node) => node.type === "tailscale");
@@ -76,7 +84,7 @@ function collectTailscale(nodes: ProxyNode[]): ProxyNode[] {
  * @param nodes - 上游订阅的节点列表（`config.proxies`）
  * @param threshold - 地区节点数量的最小阈值
  */
-export function analyzeNodes(nodes: ProxyNode[], threshold: number): NodeAnalysis {
+export function analyzeNodes(nodes: ProxyNode[], threshold: number, liteCombine = 0): NodeAnalysis {
     const { landingNodes, nonLandingNodes } = splitByLanding(nodes);
     // 只要出现落地节点就启用落地相关代理组；全落地时非落地候选自然为空。
     const landing = landingNodes.length > 0;
@@ -86,11 +94,38 @@ export function analyzeNodes(nodes: ProxyNode[], threshold: number): NodeAnalysi
     const countryNodes = collectCountries(scopedNodes);
     const countryNames = getActiveCountryNames(countryNodes, threshold);
     const lowCostNodes = collectLowCost(scopedNodes);
+    const highCostNodes = collectHighCost(scopedNodes, lowCostNodes);
     const tailscaleNodes = collectTailscale(nodes);
 
+    const smallCountries =
+        liteCombine > 0
+            ? countryNames.filter((country) => countryNodes[country].length <= liteCombine)
+            : [];
+    const smallCountrySet = new Set(smallCountries);
+    const regularCountryNames = countryNames.filter((country) => !smallCountrySet.has(country));
+    const regularCountryNodes = Object.fromEntries(
+        Object.entries(countryNodes).filter(([country]) => !smallCountrySet.has(country))
+    );
+    const smallCountryNodes = smallCountries.flatMap((country) => countryNodes[country]);
+    const lowCostNames = new Set(lowCostNodes.map((node) => node.name));
+    const highCostNames = new Set(highCostNodes.map((node) => node.name));
+    const countryLowCostNodes: Record<string, ProxyNode[]> = {};
+    const countryHighCostNodes: Record<string, ProxyNode[]> = {};
+    const countryRegularNodes: Record<string, ProxyNode[]> = {};
+
+    for (const [country, nodesInCountry] of Object.entries(regularCountryNodes)) {
+        countryLowCostNodes[country] = nodesInCountry.filter((node) => lowCostNames.has(node.name));
+        countryHighCostNodes[country] = nodesInCountry.filter((node) =>
+            highCostNames.has(node.name)
+        );
+        countryRegularNodes[country] = nodesInCountry.filter(
+            (node) => !lowCostNames.has(node.name) && !highCostNames.has(node.name)
+        );
+    }
+
     const regionLayout: RegionLayout =
-        countryNames.length >= MIN_REGION_GROUPS
-            ? { mode: "grouped", groupedCountries: countryNames, flattenedNodes: [] }
+        regularCountryNames.length >= MIN_REGION_GROUPS || smallCountryNodes.length > 0
+            ? { mode: "grouped", groupedCountries: regularCountryNames, flattenedNodes: [] }
             : { mode: "flattened", groupedCountries: [], flattenedNodes: nonLandingNodes };
 
     return {
@@ -103,6 +138,14 @@ export function analyzeNodes(nodes: ProxyNode[], threshold: number): NodeAnalysi
         countryNames,
         regionLayout,
         lowCostNodes,
+        highCostNodes,
+        smallCountries,
+        smallCountryNodes,
+        regularCountryNodes,
+        regularCountryNames,
+        countryLowCostNodes,
+        countryHighCostNodes,
+        countryRegularNodes,
         tailscaleNodes,
         hasTailscale: tailscaleNodes.length > 0,
     };

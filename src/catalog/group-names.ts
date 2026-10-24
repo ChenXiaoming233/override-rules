@@ -4,6 +4,9 @@
 
 /** 地区代理组名称的统一后缀，例如「香港」→「香港节点」。 */
 export const NODE_SUFFIX = "节点";
+export const LOW_COST_SUFFIX = " 低倍率";
+export const HIGH_COST_SUFFIX = " 高倍率";
+export const AUTO_SUFFIX = " 自动";
 
 /** 所有策略组的显示名称。 */
 export const PROXY_GROUPS = {
@@ -13,6 +16,8 @@ export const PROXY_GROUPS = {
     FALLBACK: "故障转移",
     LANDING: "落地节点",
     LOW_COST: "低倍率节点",
+    HIGH_COST: "高倍率节点",
+    OTHER: "其他节点",
     FRONT_PROXY: "前置代理",
     STATIC_RESOURCES: "静态资源",
     AI_SERVICE: "AI服务",
@@ -20,10 +25,13 @@ export const PROXY_GROUPS = {
     FINANCE: "金融服务",
     APPLE: "苹果服务",
     GOOGLE: "谷歌服务",
+    BING: "Bing",
     MICROSOFT: "微软服务",
+    ONEDRIVE: "OneDrive",
     BILIBILI: "哔哩哔哩",
     BAHAMUT: "巴哈姆特",
     XBOX: "Xbox",
+    GAMING: "游戏平台",
     TAILSCALE: "Tailscale",
     GITHUB: "Github",
     YOUTUBE: "Youtube",

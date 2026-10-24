@@ -15,12 +15,14 @@ import type { ScriptArgs } from "../../src/types/args";
 function run(args: ScriptArgs, config: ClashConfig): ClashConfig {
     const flags = buildFeatureFlags(args);
     const proxies = config.proxies ?? [];
-    const nodes = analyzeNodes(proxies, flags.countryThreshold);
+    const nodes = analyzeNodes(proxies, flags.countryThreshold, flags.liteCombine);
     const lists = buildBaseLists({
         landing: nodes.landing,
         landingNodes: nodes.landingNodes,
         lowCostNodes: nodes.lowCostNodes,
+        highCostNodes: nodes.highCostNodes,
         nonLandingNodes: nodes.nonLandingNodes,
+        smallCountryNodes: nodes.smallCountryNodes,
         regexFilter: flags.regexFilter,
         regions: nodes.regionLayout,
     });
@@ -142,7 +144,10 @@ describe("assembleConfig", () => {
     });
 
     it("只有台湾时服务组不引用未生成的地区组", () => {
-        const result = run({}, { proxies: [{ name: "台湾01" }, { name: "台湾02" }] });
+        const result = run(
+            { threshold: "2" },
+            { proxies: [{ name: "台湾01" }, { name: "台湾02" }] }
+        );
         const allGroupNames = (result["proxy-groups"] ?? []).map((item) => item.name);
 
         assert.ok(!allGroupNames.includes("台湾节点"));
@@ -161,7 +166,10 @@ describe("assembleConfig", () => {
     });
 
     it("只有美国时 Truth Social 不引用未生成的地区组", () => {
-        const result = run({}, { proxies: [{ name: "美国01" }, { name: "美国02" }] });
+        const result = run(
+            { threshold: "2" },
+            { proxies: [{ name: "美国01" }, { name: "美国02" }] }
+        );
 
         assert.ok(!(result["proxy-groups"] ?? []).some((item) => item.name === "美国节点"));
         assert.deepEqual(group(result, PROXY_GROUPS.TRUTH_SOCIAL)?.proxies, [
@@ -200,5 +208,82 @@ describe("assembleConfig", () => {
         assert.equal(result["rule-providers"], ruleSets);
         assert.equal(result["geodata-mode"], true);
         assert.ok(result["geox-url"]?.geoip);
+    });
+
+    it("默认拆分地区低倍率子组", () => {
+        const result = run(
+            { threshold: "1" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港 0.2x" },
+                    { name: "美国01" },
+                    { name: "美国02" },
+                ],
+            }
+        );
+
+        assert.deepEqual(group(result, "香港 低倍率")?.proxies, ["香港 0.2x"]);
+        assert.deepEqual(group(result, "香港节点")?.proxies, ["香港 低倍率", "香港01"]);
+    });
+
+    it("lite-combine 把单节点地区合并进其他节点", () => {
+        const result = run(
+            { threshold: "1", "lite-combine": "1" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港02" },
+                    { name: "美国01" },
+                    { name: "日本01" },
+                ],
+            }
+        );
+
+        assert.deepEqual(group(result, PROXY_GROUPS.OTHER)?.proxies, ["日本01", "美国01"]);
+        assert.equal(group(result, "美国节点"), undefined);
+        assert.ok(group(result, "香港节点"));
+    });
+
+    it("regex 模式只排除实际拆分的倍率子组节点", () => {
+        const result = run(
+            {
+                threshold: "1",
+                regex: "true",
+                "lowcost-split": "false",
+                "highcost-split": "true",
+            },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港 0.2x" },
+                    { name: "香港 3.0x" },
+                    { name: "美国01" },
+                ],
+            }
+        );
+
+        assert.equal(group(result, "香港 低倍率"), undefined);
+        assert.equal(group(result, "香港节点")?.["exclude-filter"], "^(?:香港 3\\.0x)$");
+    });
+
+    it("regex 模式倍率子组使用动态筛选，不枚举节点名", () => {
+        const result = run(
+            { threshold: "1", regex: "true" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港 0.2x" },
+                    { name: "美国01" },
+                    { name: "美国02" },
+                ],
+            }
+        );
+
+        const lowCost = group(result, "香港 低倍率");
+        assert.equal(lowCost?.["include-all"], true);
+        assert.ok(lowCost?.filter?.includes("香港"));
+        assert.ok(lowCost?.filter?.includes("省流"));
+        assert.equal(lowCost?.proxies, undefined);
     });
 });

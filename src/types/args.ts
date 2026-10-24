@@ -14,6 +14,10 @@ export interface ScriptArgs {
     regex?: string;
     threshold?: string;
     tun?: string;
+    "lowcost-split"?: string;
+    "highcost-split"?: string;
+    "auto-split"?: string;
+    "lite-combine"?: string;
 }
 
 /** 地区代理组类型：0=select（手动选择），1=url-test（自动测速），2=load-balance（负载均衡）。 */
@@ -30,4 +34,8 @@ export interface FeatureFlags {
     regexFilter: boolean;
     countryThreshold: number;
     tunEnabled: boolean;
+    splitLowCost: boolean;
+    splitHighCost: boolean;
+    autoSplit: boolean;
+    liteCombine: number;
 }

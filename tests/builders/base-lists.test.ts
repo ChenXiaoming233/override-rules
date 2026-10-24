@@ -10,7 +10,9 @@ function buildInput(overrides: Partial<BuildBaseListsInput> = {}): BuildBaseList
         landing: false,
         landingNodes: [],
         lowCostNodes: [],
+        highCostNodes: [],
         nonLandingNodes: [],
+        smallCountryNodes: [],
         regexFilter: false,
         regions: { mode: "flattened", groupedCountries: [], flattenedNodes: [] },
         ...overrides,
@@ -107,6 +109,7 @@ describe("buildBaseLists", () => {
             PROXY_GROUPS.LANDING,
             { "include-all": true, "exclude-filter": "^(?:落地A)$" },
             PROXY_GROUPS.LOW_COST,
+            PROXY_GROUPS.HIGH_COST,
             PROXY_GROUPS.MANUAL,
             "DIRECT",
         ]);
@@ -126,6 +129,7 @@ describe("buildBaseLists", () => {
         assert.deepEqual(lists.defaultSelector, [
             PROXY_GROUPS.LANDING,
             PROXY_GROUPS.LOW_COST,
+            PROXY_GROUPS.HIGH_COST,
             PROXY_GROUPS.MANUAL,
             "DIRECT",
         ]);

@@ -116,7 +116,9 @@ export interface BuildBaseListsInput {
     landing: boolean;
     landingNodes: ProxyNode[];
     lowCostNodes: ProxyNode[];
+    highCostNodes: ProxyNode[];
     nonLandingNodes: ProxyNode[];
+    smallCountryNodes: ProxyNode[];
     regexFilter: boolean;
     regions: RegionLayout;
 }
@@ -141,6 +143,22 @@ export interface NodeAnalysis {
     regionLayout: RegionLayout;
     /** 匹配低倍率正则的节点。 */
     lowCostNodes: ProxyNode[];
+    /** 匹配高倍率正则的节点，低倍率匹配优先。 */
+    highCostNodes: ProxyNode[];
+    /** 节点数不超过 `lite-combine` 阈值、被合并进「其他节点」的地区。 */
+    smallCountries: string[];
+    /** 被合并进「其他节点」的节点。 */
+    smallCountryNodes: ProxyNode[];
+    /** 移除小地区后的地区节点映射。 */
+    regularCountryNodes: Record<string, ProxyNode[]>;
+    /** 移除小地区后的地区名称。 */
+    regularCountryNames: string[];
+    /** 各地区内的低倍率节点。 */
+    countryLowCostNodes: Record<string, ProxyNode[]>;
+    /** 各地区内的高倍率节点。 */
+    countryHighCostNodes: Record<string, ProxyNode[]>;
+    /** 各地区内排除低/高倍率后的常规节点。 */
+    countryRegularNodes: Record<string, ProxyNode[]>;
     /** `type: "tailscale"` 的节点。 */
     tailscaleNodes: ProxyNode[];
     /** 是否存在 Tailscale 节点。 */

@@ -28,6 +28,8 @@ function parseGroupType(args: ScriptArgs): GroupType {
  * @param args - 从脚本环境（如 Substore）传入的原始参数对象
  */
 export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
+    const liteCombine = parseNumber(args["lite-combine"], ARG_DEFAULTS.liteCombine);
+
     return {
         groupType: parseGroupType(args),
         ipv6Enabled: parseBool(args.ipv6),
@@ -38,5 +40,9 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
         regexFilter: parseBool(args.regex),
         tunEnabled: parseBool(args.tun),
         countryThreshold: parseNumber(args.threshold, ARG_DEFAULTS.countryThreshold),
+        splitLowCost: parseBool(args["lowcost-split"], ARG_DEFAULTS.splitLowCost),
+        splitHighCost: parseBool(args["highcost-split"], ARG_DEFAULTS.splitHighCost),
+        autoSplit: parseBool(args["auto-split"], ARG_DEFAULTS.autoSplit),
+        liteCombine: Math.max(0, liteCombine),
     };
 }

@@ -56,7 +56,7 @@
 
 目前支持的参数：
 
-*   `grouptype`：地区代理组类型（0=手动选择 select，1=自动测速 url-test，2=负载均衡 load-balance，默认 1）
+*   `grouptype`：地区代理组类型（0=手动选择 select，1=自动测速 url-test，2=负载均衡 load-balance，默认 0）
 *   `ipv6`：启用 IPv6 支持（默认 false）
 *   `full`：生成完整配置（适合纯内核启动，默认 false）
 *   `keepalive`：启用 TCP Keep Alive（默认 false）[^fn2]
@@ -64,11 +64,15 @@
 *   `quic`：允许 QUIC 流量（UDP 443，默认 false）[^quic]
 *   `regex`：各国家/地区代理组与「手动选择」组改用 `include-all` 模式，由 Mihomo 内核在运行时动态填充节点（地区组再附加正则 `filter`；展平后的节点候选通过 `exclude-filter` 排除落地节点），而非在脚本执行时枚举节点名称（默认 false）[^regex]
 *   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）
-*   `threshold`：国家/地区节点数量小于该值时不显示分组（默认 2）；过滤后不足 2 个地区时自动展平，不再生成地区组
+*   `threshold`：国家/地区节点数量小于该值时不显示分组（默认 0）；过滤后不足 2 个地区时自动展平，不再生成地区组
+*   `lite-combine`：将节点数不超过该值的地区合并到统一的“其他节点”代理组；设为 0 可禁用（默认 1）
+*   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立子组（如“新加坡 低倍率”，默认 true）
+*   `highcost-split`：是否将各地区内的高倍率节点拆分为独立子组（如“新加坡 高倍率”，默认 false）
+*   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 false）
 
 > **向后兼容**：旧的 `loadbalance` 参数仍然可用。当 `grouptype` 未指定时，`loadbalance=true` 等价于 `grouptype=2`，`loadbalance=false` 等价于 `grouptype=1`。
 
-> **地区组展平**：`threshold` 过滤后不足 2 个地区时，`选择代理`、`自动选择`、`故障转移` 会直接使用非落地节点（存在落地节点时还会引用「落地节点」组），不会生成 `XX节点` 地区组。`threshold=1` 且至少 2 个地区达标时仍按地区分组。当某个代理组的候选列表为空时，构造层会自动补入 `DIRECT`（启用 `include-all` 的组除外），因此空订阅或全落地也不会产生空组。
+> **地区组展平**：`threshold` 过滤并合并小地区后，不足 2 个地区组时，`选择代理`、`自动选择`、`故障转移` 会直接使用非落地节点（存在落地节点时还会引用「落地节点」组），不会生成 `XX节点` 地区组。`threshold=1` 且至少 2 个地区达标时仍按地区分组。当某个代理组的候选列表为空时，构造层会自动补入 `DIRECT`（启用 `include-all` 的组除外），因此空订阅或全落地也不会产生空组。
 
 [^quic]: 默认屏蔽了 QUIC 流量防止节点 UDP 性能不佳影响上网体验，如果确信节点质量良好，建议设置为 true。
 [^regex]: 默认情况下覆写脚本会直接把节点都筛选好，如果想让内核来筛（比如，你在 Clash Party 客户端里额外添加了自建节点，想直接通过正则表达式筛选进入配置文件）那就打开吧。展平模式下同样使用 `include-all`，并通过 `exclude-filter` 排除落地节点，避免链式代理形成循环。
@@ -98,6 +102,8 @@ https://raw.githubusercontent.com/powerfullz/override-rules/refs/heads/preview/c
 ### 关于部分特殊代理组的说明
 
 **静态资源**：包含所有常见静态资源 CDN 域名、对象存储域名。大部分网站的静态资源（如图片、视频、音频、字体、JS、CSS）都有独立域名、不设置风控措施、不设置鉴权，这些静态资源可以使用 IP 不一定干净（例如 IDC 类 IP）、但是带宽更大、延时更低、而且有和大部分主流 CDN（如 Cloudflare、Akamai、Fastly、EdgeCast）在 IXP 有互联的网络出口。一般就实践经验来看，在正常上网中这部分域名产生的流量占据约 70% 左右。如果你在使用商业性质的远端策略服务提供商、且该服务上提供了低倍率节点，你可以将这部分域名分流至低倍率节点以节省流量。[^fn1]
+
+> **Fork 差异**：本 fork 对静态资源与 CDN 规则增加了国内直连判断，减少不必要的代理流量并加快国内加载。
 
 [^fn1]: 来源：[我有特别的 Surge 配置和使用技巧](https://blog.skk.moe/post/i-have-my-unique-surge-setup/)
 
@@ -161,7 +167,7 @@ https://cdn.jsdelivr.net/gh/powerfullz/override-rules@v0.1.0/yamls/config_gt-0_i
 https://git.l3zc.com/powerfullz/override-rules/raw/branch/dist/yamls/config_gt-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0_tun-0.yaml
 ```
 
-*注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。*
+*注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。静态 YAML 固定使用默认的 `lite-combine=1`，不额外扩展组合矩阵。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。*
 
 ### 如何自定义与贡献
 
