@@ -10,7 +10,7 @@ import { CDN_URL } from "./endpoints";
 const QURE = `${CDN_URL}/gh/Koolson/Qure@master/IconSet/Color`;
 
 /** 本仓库自带图标。 */
-const SELF = `${CDN_URL}/gh/powerfullz/override-rules@master/icons`;
+const SELF = `${CDN_URL}/gh/ChenXiaoming233/override-rules@main/icons`;
 
 /** shindgewongxj/WHATSINStash 图标集。 */
 const STASH = `${CDN_URL}/gh/shindgewongxj/WHATSINStash@master/icon`;

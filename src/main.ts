@@ -1,6 +1,6 @@
 /*!
-powerfullz 的 Substore 订阅转换脚本
-https://github.com/powerfullz/override-rules
+ChenXiaoming233 的 Substore 订阅转换脚本
+https://github.com/ChenXiaoming233/override-rules
 
 支持的传入参数：
 - grouptype: 地区代理组类型（0=select 手动选择, 1=url-test 自动测速, 2=load-balance 负载均衡，默认 1）

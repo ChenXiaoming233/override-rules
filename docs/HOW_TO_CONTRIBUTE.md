@@ -1,6 +1,6 @@
 # 贡献指南 (HOW TO CONTRIBUTE)
 
-欢迎来到 `powerfullz/override-rules`！非常感谢你愿意为本项目贡献代码或新增特性。
+欢迎来到 `ChenXiaoming233/override-rules`！非常感谢你愿意为本项目贡献代码或新增特性。
 
 本指南旨在帮助人类开发者和 AI 助手（如需了解针对 AI 的特殊规范，也可参考 [`AGENTS.md`](../AGENTS.md)）快速熟悉本项目的开发工作流。
 
