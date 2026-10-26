@@ -75,6 +75,7 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
         const hasLowCost = flags.splitLowCost && lowCostNames.length > 0;
         const hasHighCost = flags.splitHighCost && highCostNames.length > 0;
         const hasAuto = hasAutoSplit && regularNames.length > 0;
+        const autoGroupName = `${country}${AUTO_SUFFIX}`;
 
         if (!hasLowCost && !hasHighCost && !hasAuto) {
             result.groups.push(
@@ -142,10 +143,9 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
             childNames.push(name);
         }
         if (hasAuto) {
-            const name = `${country}${AUTO_SUFFIX}`;
             if (flags.regexFilter) {
                 result.autoGroups.push(
-                    urlTestGroup(name, meta.icon, [
+                    urlTestGroup(autoGroupName, meta.icon, [
                         {
                             "include-all": true,
                             filter: meta.pattern,
@@ -154,9 +154,11 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
                     ])
                 );
             } else {
-                result.autoGroups.push(urlTestGroupWithProxies(name, meta.icon, regularNames));
+                result.autoGroups.push(
+                    urlTestGroupWithProxies(autoGroupName, meta.icon, regularNames)
+                );
             }
-            childNames.push(name);
+            childNames.push(autoGroupName);
         }
 
         const explicitProxies = [
@@ -167,6 +169,7 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
         ];
         const regexNodeSource = excludeNodeNames(
             {
+                ...(childNames.length > 0 ? { proxies: childNames } : {}),
                 "include-all": true as const,
                 filter: meta.pattern,
                 ...(meta.excludePattern ? { "exclude-filter": meta.excludePattern } : {}),
@@ -180,6 +183,7 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
                 icon: meta.icon,
                 groupType: flags.groupType,
                 nodeSource: flags.regexFilter ? regexNodeSource : { proxies: explicitProxies },
+                defaultSelected: hasAuto ? autoGroupName : undefined,
             })
         );
     }

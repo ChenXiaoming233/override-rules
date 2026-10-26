@@ -129,7 +129,7 @@ flowchart TD
 
 分类结果还会派生 `regionLayout`：移除 `lite-combine` 小地区后，地区数 ≥ 2 时为 `grouped`，为每个地区生成 `${地区}节点` 组；不足 2 个时为 `flattened`，不生成任何地区组，`选择代理`、`自动选择`、`故障转移` 直接引用非落地节点。服务组同样按 `regionLayout.groupedCountries` 判断目标地区组是否存在，避免引用已展平的地区组。
 
-`lowcost-split`、`highcost-split` 与 `auto-split` 控制地区子组；`lite-combine > 0` 时生成「其他节点」组。非 regex 模式显式枚举节点；regex 模式全部改为 `include-all` + `filter` 动态筛选：倍率子组使用「地区 ∩ 倍率」正则，自动子组使用地区正则并排除倍率节点。主地区组再用 `exclude-filter` 排除已拆出的节点，避免重复归属。
+`lowcost-split`、`highcost-split` 与 `auto-split` 控制地区子组；`auto-split=true` 时地区主组通过 `default-selected` 默认选中对应的自动测速子组。`lite-combine > 0` 时生成「其他节点」组。非 regex 模式显式枚举节点；regex 模式全部改为 `include-all` + `filter` 动态筛选：倍率子组使用「地区 ∩ 倍率」正则，自动子组使用地区正则并排除倍率节点。主地区组再用 `exclude-filter` 排除已拆出的节点，避免重复归属，同时显式保留倍率与自动子组候选。
 
 ### Tailscale 集成
 

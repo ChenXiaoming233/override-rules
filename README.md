@@ -68,7 +68,7 @@
 *   `lite-combine`：将节点数不超过该值的地区合并到统一的“其他节点”代理组；设为 0 可禁用（默认 1）
 *   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立子组（如“新加坡 低倍率”，默认 true）
 *   `highcost-split`：是否将各地区内的高倍率节点拆分为独立子组（如“新加坡 高倍率”，默认 false）
-*   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 false）
+*   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 false）；开启时地区主组会通过 `default-selected` 默认选中对应自动子组
 
 > **向后兼容**：旧的 `loadbalance` 参数仍然可用。当 `grouptype` 未指定时，`loadbalance=true` 等价于 `grouptype=2`，`loadbalance=false` 等价于 `grouptype=1`。
 
@@ -104,6 +104,8 @@ https://raw.githubusercontent.com/ChenXiaoming233/override-rules/refs/heads/prev
 **静态资源**：包含所有常见静态资源 CDN 域名、对象存储域名。大部分网站的静态资源（如图片、视频、音频、字体、JS、CSS）都有独立域名、不设置风控措施、不设置鉴权，这些静态资源可以使用 IP 不一定干净（例如 IDC 类 IP）、但是带宽更大、延时更低、而且有和大部分主流 CDN（如 Cloudflare、Akamai、Fastly、EdgeCast）在 IXP 有互联的网络出口。一般就实践经验来看，在正常上网中这部分域名产生的流量占据约 70% 左右。如果你在使用商业性质的远端策略服务提供商、且该服务上提供了低倍率节点，你可以将这部分域名分流至低倍率节点以节省流量。[^fn1]
 
 > **Fork 差异**：本 fork 对静态资源与 CDN 规则增加了国内直连判断，减少不必要的代理流量并加快国内加载。
+
+**苹果与微软服务**：`苹果服务`、`微软服务`、`OneDrive`、`Xbox`、`游戏平台` 默认直连，`DIRECT` 位于各组候选列表首位，同时保留原有全部代理选项。
 
 [^fn1]: 来源：[我有特别的 Surge 配置和使用技巧](https://blog.skk.moe/post/i-have-my-unique-surge-setup/)
 

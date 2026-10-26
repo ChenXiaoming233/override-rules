@@ -21,6 +21,39 @@ describe("buildGroupByType", () => {
         assert.deepEqual(Object.keys(group), ["name", "icon", "type", "proxies"]);
     });
 
+    it("select 组可指定 default-selected", () => {
+        const group = buildGroupByType({
+            name: "香港节点",
+            icon: "icon",
+            groupType: 0,
+            nodeSource: { proxies: ["香港 自动", "香港01"] },
+            defaultSelected: "香港 自动",
+        });
+
+        assert.equal(group.type, "select");
+        assert.equal(group.type === "select" && group["default-selected"], "香港 自动");
+        assert.deepEqual(Object.keys(group), [
+            "name",
+            "icon",
+            "type",
+            "proxies",
+            "default-selected",
+        ]);
+    });
+
+    it("自动组不输出 default-selected", () => {
+        for (const groupType of [1, 2] as const) {
+            const group = buildGroupByType({
+                name: "香港节点",
+                icon: "icon",
+                groupType,
+                nodeSource: { proxies: ["a"] },
+                defaultSelected: "a",
+            });
+            assert.ok(!("default-selected" in group));
+        }
+    });
+
     it("groupType=1 生成 url-test 组", () => {
         const group = buildGroupByType({
             name: "香港节点",

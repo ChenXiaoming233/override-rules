@@ -21,6 +21,11 @@ export interface ServiceGroupDef {
     proxies: (ctx: GroupBuildContext) => string[];
 }
 
+/** 将 DIRECT 放到候选列表首位，同时移除原有的重复项。 */
+function withDirectFirst(candidates: string[]): string[] {
+    return ["DIRECT", ...candidates.filter((candidate) => candidate !== "DIRECT")];
+}
+
 /** 服务代理组，按输出顺序排列。 */
 export const serviceGroups: ServiceGroupDef[] = [
     {
@@ -46,7 +51,7 @@ export const serviceGroups: ServiceGroupDef[] = [
     {
         name: PROXY_GROUPS.APPLE,
         icon: ICONS.apple,
-        proxies: (ctx) => ctx.lists.defaultProxies,
+        proxies: (ctx) => withDirectFirst(ctx.lists.defaultProxies),
     },
     {
         name: PROXY_GROUPS.GOOGLE,
@@ -61,22 +66,22 @@ export const serviceGroups: ServiceGroupDef[] = [
     {
         name: PROXY_GROUPS.MICROSOFT,
         icon: ICONS.microsoft,
-        proxies: (ctx) => ctx.lists.defaultProxies,
+        proxies: (ctx) => withDirectFirst(ctx.lists.defaultProxies),
     },
     {
         name: PROXY_GROUPS.ONEDRIVE,
         icon: ICONS.oneDrive,
-        proxies: (ctx) => ctx.lists.defaultProxies,
+        proxies: (ctx) => withDirectFirst(ctx.lists.defaultProxies),
     },
     {
         name: PROXY_GROUPS.XBOX,
         icon: ICONS.xbox,
-        proxies: (ctx) => ctx.lists.defaultProxies,
+        proxies: (ctx) => withDirectFirst(ctx.lists.defaultProxies),
     },
     {
         name: PROXY_GROUPS.GAMING,
         icon: ICONS.gaming,
-        proxies: (ctx) => ctx.lists.defaultProxies,
+        proxies: (ctx) => withDirectFirst(ctx.lists.defaultProxies),
     },
     {
         name: PROXY_GROUPS.GITHUB,

@@ -19,6 +19,7 @@ interface BuildGroupByTypeInput {
     icon: string;
     groupType: GroupType;
     nodeSource: ProxyGroupNodeSource;
+    defaultSelected?: string;
 }
 
 /**
@@ -93,12 +94,19 @@ export function buildGroupByType({
     icon,
     groupType,
     nodeSource,
+    defaultSelected,
 }: BuildGroupByTypeInput): ProxyGroup {
     const source = normalizeNodeSource([nodeSource]);
 
     switch (groupType) {
         case 0:
-            return { name, icon, type: "select", ...source };
+            return {
+                name,
+                icon,
+                type: "select",
+                ...source,
+                ...(defaultSelected ? { "default-selected": defaultSelected } : {}),
+            };
         case 1:
             return {
                 name,

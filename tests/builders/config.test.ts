@@ -64,6 +64,44 @@ describe("assembleConfig", () => {
         assert.ok(!("hosts" in result));
     });
 
+    it("苹果、微软与游戏平台相关组将 DIRECT 放在首位", () => {
+        const result = run({}, CONFIG);
+        const defaultOptions = group(result, PROXY_GROUPS.GOOGLE)?.proxies ?? [];
+        const expected = ["DIRECT", ...defaultOptions.filter((name) => name !== "DIRECT")];
+
+        for (const name of [
+            PROXY_GROUPS.APPLE,
+            PROXY_GROUPS.MICROSOFT,
+            PROXY_GROUPS.ONEDRIVE,
+            PROXY_GROUPS.XBOX,
+            PROXY_GROUPS.GAMING,
+        ]) {
+            assert.deepEqual(group(result, name)?.proxies, expected);
+        }
+    });
+
+    it("地区主组在 auto-split=true 时默认选中自动子组", () => {
+        for (const regex of ["false", "true"]) {
+            const result = run(
+                { threshold: "1", "auto-split": "true", regex },
+                {
+                    proxies: [
+                        { name: "香港01" },
+                        { name: "香港02" },
+                        { name: "美国01" },
+                        { name: "美国02" },
+                    ],
+                }
+            );
+            const hongKong = group(result, "香港节点");
+
+            assert.equal(hongKong?.type, "select");
+            assert.equal(hongKong?.type === "select" && hongKong["default-selected"], "香港 自动");
+            assert.ok(hongKong?.proxies?.includes("香港 自动"));
+            if (regex === "true") assert.equal(hongKong?.["include-all"], true);
+        }
+    });
+
     it("full=true 时追加完整内核参数", () => {
         const result = run({ full: "true" }, CONFIG);
         assert.equal(result["mixed-port"], 7890);

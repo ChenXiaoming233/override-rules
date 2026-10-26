@@ -29,6 +29,7 @@ export interface BaseProxyGroup {
 
 export interface SelectProxyGroup extends BaseProxyGroup {
     type: "select";
+    "default-selected"?: string;
 }
 
 export interface UrlTestProxyGroup extends BaseProxyGroup {
