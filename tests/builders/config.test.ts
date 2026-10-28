@@ -15,7 +15,7 @@ import type { ScriptArgs } from "../../src/types/args";
 function run(args: ScriptArgs, config: ClashConfig): ClashConfig {
     const flags = buildFeatureFlags(args);
     const proxies = config.proxies ?? [];
-    const nodes = analyzeNodes(proxies, flags.countryThreshold, flags.liteCombine);
+    const nodes = analyzeNodes(proxies, flags.liteCombine);
     const lists = buildBaseLists({
         landing: nodes.landing,
         landingNodes: nodes.landingNodes,
@@ -83,7 +83,7 @@ describe("assembleConfig", () => {
     it("地区主组在 auto-split=true 时默认选中自动子组", () => {
         for (const regex of ["false", "true"]) {
             const result = run(
-                { threshold: "1", "auto-split": "true", regex },
+                { "auto-split": "true", regex },
                 {
                     proxies: [
                         { name: "香港01" },
@@ -183,10 +183,7 @@ describe("assembleConfig", () => {
     });
 
     it("只有台湾时服务组不引用未生成的地区组", () => {
-        const result = run(
-            { threshold: "2" },
-            { proxies: [{ name: "台湾01" }, { name: "台湾02" }] }
-        );
+        const result = run({}, { proxies: [{ name: "台湾01" }, { name: "台湾02" }] });
         const allGroupNames = (result["proxy-groups"] ?? []).map((item) => item.name);
 
         assert.ok(!allGroupNames.includes("台湾节点"));
@@ -205,10 +202,7 @@ describe("assembleConfig", () => {
     });
 
     it("只有美国时 Truth Social 不引用未生成的地区组", () => {
-        const result = run(
-            { threshold: "2" },
-            { proxies: [{ name: "美国01" }, { name: "美国02" }] }
-        );
+        const result = run({}, { proxies: [{ name: "美国01" }, { name: "美国02" }] });
 
         assert.ok(!(result["proxy-groups"] ?? []).some((item) => item.name === "美国节点"));
         assert.deepEqual(group(result, PROXY_GROUPS.TRUTH_SOCIAL)?.proxies, [
@@ -251,7 +245,7 @@ describe("assembleConfig", () => {
 
     it("按地区、服务、倍率和自动子组的顺序组装代理组", () => {
         const result = run(
-            { threshold: "1", "highcost-split": "true" },
+            { "highcost-split": "true" },
             {
                 proxies: [
                     { name: "香港01" },
@@ -298,7 +292,7 @@ describe("assembleConfig", () => {
 
     it("默认拆分地区低倍率与自动子组", () => {
         const result = run(
-            { threshold: "1" },
+            {},
             {
                 proxies: [
                     { name: "香港01" },
@@ -323,7 +317,7 @@ describe("assembleConfig", () => {
 
     it("auto-split=false 时地区组不设置默认自动子组", () => {
         const result = run(
-            { threshold: "1", "auto-split": "false" },
+            { "auto-split": "false" },
             {
                 proxies: [
                     { name: "香港01" },
@@ -342,7 +336,7 @@ describe("assembleConfig", () => {
 
     it("lite-combine 把单节点地区合并进其他节点", () => {
         const result = run(
-            { threshold: "1", "lite-combine": "1" },
+            { "lite-combine": "1" },
             {
                 proxies: [
                     { name: "香港01" },
@@ -358,10 +352,62 @@ describe("assembleConfig", () => {
         assert.ok(group(result, "香港节点"));
     });
 
+    it("lite-combine=0 时保留单节点地区组", () => {
+        const result = run(
+            { "lite-combine": "0" },
+            { proxies: [{ name: "香港01" }, { name: "美国01" }] }
+        );
+
+        assert.ok(group(result, "香港节点"));
+        assert.ok(group(result, "美国节点"));
+        assert.equal(group(result, PROXY_GROUPS.OTHER), undefined);
+    });
+
+    it("所有地区都是小地区时只生成其他节点", () => {
+        const result = run(
+            {},
+            { proxies: [{ name: "香港01" }, { name: "美国01" }, { name: "日本01" }] }
+        );
+        const groupNames = (result["proxy-groups"] ?? []).map((item) => item.name);
+
+        assert.ok(groupNames.includes(PROXY_GROUPS.OTHER));
+        for (const countryGroup of ["香港节点", "美国节点", "日本节点"]) {
+            assert.ok(!groupNames.includes(countryGroup));
+        }
+        assert.ok(group(result, PROXY_GROUPS.SELECT)?.proxies?.includes(PROXY_GROUPS.OTHER));
+    });
+
+    it("regex=true 时其他节点显式排除落地节点和误匹配节点", () => {
+        const result = run(
+            { regex: "true" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港02" },
+                    { name: "美国01" },
+                    { name: "美属萨摩亚01" },
+                    { name: "美国落地01", "dialer-proxy": "前置代理" },
+                ],
+            }
+        );
+        const other = group(result, PROXY_GROUPS.OTHER);
+
+        assert.equal(other?.["include-all"], undefined);
+        assert.deepEqual(other?.proxies, ["美国01"]);
+    });
+
+    it("只有一个常规地区且没有小地区时保持展平", () => {
+        const result = run({}, { proxies: [{ name: "香港01" }, { name: "香港02" }] });
+        const groupNames = (result["proxy-groups"] ?? []).map((item) => item.name);
+
+        assert.ok(!groupNames.includes("香港节点"));
+        assert.deepEqual(group(result, PROXY_GROUPS.AUTO)?.proxies, ["香港01", "香港02"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.FALLBACK)?.proxies, ["香港01", "香港02"]);
+    });
+
     it("regex 模式只排除实际拆分的倍率子组节点", () => {
         const result = run(
             {
-                threshold: "1",
                 regex: "true",
                 "lowcost-split": "false",
                 "highcost-split": "true",
@@ -382,7 +428,7 @@ describe("assembleConfig", () => {
 
     it("regex 模式倍率子组使用动态筛选，不枚举节点名", () => {
         const result = run(
-            { threshold: "1", regex: "true" },
+            { regex: "true" },
             {
                 proxies: [
                     { name: "香港01" },

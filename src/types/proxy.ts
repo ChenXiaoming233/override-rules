@@ -92,12 +92,12 @@ export type ProxyGroupCandidate = string | ProxyGroupNodeSource;
 /**
  * 地区代理组布局。
  *
- * 达标地区数不足 `MIN_REGION_GROUPS` 时进入展平模式，不生成地区组，
+ * 常规地区数不足 `MIN_REGION_GROUPS` 且没有小地区时进入展平模式，不生成地区组，
  * 由上层代理组直接引用非落地节点。
  */
 export interface RegionLayout {
     mode: "grouped" | "flattened";
-    /** 真正会生成地区组的地区（mode 为 grouped 时非空）。 */
+    /** 真正会生成常规地区组的地区；全部地区都是小地区时可为空。 */
     groupedCountries: string[];
     /** 展平模式下直接进入上层列表的非落地节点。 */
     flattenedNodes: ProxyNode[];
@@ -138,7 +138,7 @@ export interface NodeAnalysis {
     landing: boolean;
     /** 地区名（不含后缀）→ 节点数组。 */
     countryNodes: Record<string, ProxyNode[]>;
-    /** 通过阈值过滤并按权重排序后的地区名（不含后缀）。 */
+    /** 按权重排序后的已识别地区名（不含后缀）。 */
     countryNames: string[];
     /** 地区组的实际布局：分组或展平。 */
     regionLayout: RegionLayout;

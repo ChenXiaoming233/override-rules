@@ -12,7 +12,6 @@ export interface ScriptArgs {
     fakeip?: string;
     quic?: string;
     regex?: string;
-    threshold?: string;
     tun?: string;
     "lowcost-split"?: string;
     "highcost-split"?: string;
@@ -32,7 +31,6 @@ export interface FeatureFlags {
     fakeIPEnabled: boolean;
     quicEnabled: boolean;
     regexFilter: boolean;
-    countryThreshold: number;
     tunEnabled: boolean;
     splitLowCost: boolean;
     splitHighCost: boolean;

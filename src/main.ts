@@ -12,7 +12,6 @@ https://github.com/ChenXiaoming233/override-rules
 - keepalive: 启用 tcp-keep-alive（默认 false）
 - fakeip: DNS 使用 FakeIP 模式（默认 true；传 false 时为 RedirHost）
 - quic: 允许 QUIC 流量（UDP 443，默认 false）
-- threshold: 地区节点数量小于该值时不显示分组（默认 2）
 - regex: 使用正则过滤模式（include-all + filter）写入各地区代理组，而非直接枚举节点名称（默认 false）
 
 源码位于 `src/`，入口为 `src/main.ts`。
@@ -49,7 +48,7 @@ function main(config: ClashConfig): ClashConfig {
     }
 
     const flags = buildFeatureFlags(readRawArgs());
-    const nodes = analyzeNodes(config.proxies, flags.countryThreshold, flags.liteCombine);
+    const nodes = analyzeNodes(config.proxies, flags.liteCombine);
     const lists = buildBaseLists({
         landing: nodes.landing,
         landingNodes: nodes.landingNodes,

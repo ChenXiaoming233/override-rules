@@ -279,15 +279,8 @@ function buildRegionGroups(ctx: GroupBuildContext): RegionGroupBlocks {
                   name: PROXY_GROUPS.OTHER,
                   icon: ICONS.other,
                   groupType: flags.groupType,
-                  nodeSource: flags.regexFilter
-                      ? {
-                            "include-all": true as const,
-                            filter: nodes.smallCountries
-                                .map((country) => countriesMeta[country]?.pattern)
-                                .filter(Boolean)
-                                .join("|"),
-                        }
-                      : { proxies: nodes.smallCountryNodes.map((node) => node.name) },
+                  // 小地区是生成时的节点数量结果，不能用运行时正则精确复现。
+                  nodeSource: { proxies: nodes.smallCountryNodes.map((node) => node.name) },
               })
             : null;
 

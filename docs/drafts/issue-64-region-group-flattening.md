@@ -1,6 +1,7 @@
 # 草案：地区节点组的展平与空缺处理
 
 > 状态：**已实现**。关联 issue：[#64](https://github.com/powerfullz/override-rules/issues/64)
+> 后续变更：`threshold` 已移除，所有已识别地区都参与 `lite-combine`；本文保留为 issue #64 的历史设计记录。
 
 ## 背景
 

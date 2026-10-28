@@ -76,7 +76,7 @@ flowchart TD
 | `src/catalog/service-groups.ts` | 服务代理组的声明式目录 | `serviceGroups` |
 | `src/catalog/rule-sets.ts` | Rule Provider 注册表（强类型键） | `ruleSets`, `RuleSetKey`, `ruleSet()` |
 | `src/analysis/classify.ts` | 节点多维度分类 | `analyzeNodes()` |
-| `src/analysis/active-countries.ts` | 地区阈值过滤与权重排序 | `getActiveCountryNames()` |
+| `src/analysis/active-countries.ts` | 地区权重排序 | `getSortedCountryNames()` |
 | `src/domain/proxy-group.ts` | 代理组构造工厂（字段顺序与空候选兜底集中管理） | `buildGroupByType()`, `selectGroup()`, `urlTestGroup()`, `fallbackGroup()` |
 | `src/builders/selectors.ts` | 各策略组的基础候选列表 | `buildBaseLists()` |
 | `src/builders/proxy-groups.ts` | 代理组组装（前置/地区主组/服务/倍率与地区子组/尾部） | `buildProxyGroups()` |
@@ -127,9 +127,9 @@ flowchart TD
 
 这些分类维度相互独立，构建阶段通过组合它们来生成完整的代理组树。
 
-分类结果还会派生 `regionLayout`：移除 `lite-combine` 小地区后，地区数 ≥ 2 时为 `grouped`，为每个地区生成 `${地区}节点` 组；不足 2 个时为 `flattened`，不生成任何地区组，`选择代理`、`自动选择`、`故障转移` 直接引用非落地节点。服务组同样按 `regionLayout.groupedCountries` 判断目标地区组是否存在，避免引用已展平的地区组。
+分类结果还会派生 `regionLayout`：移除 `lite-combine` 小地区后，常规地区数 ≥ 2 或存在小地区节点时为 `grouped`，为每个常规地区生成 `${地区}节点` 组，并为小地区生成「其他节点」；常规地区不足 2 个且没有小地区时为 `flattened`，不生成任何地区组，`选择代理`、`自动选择`、`故障转移` 直接引用非落地节点。服务组同样按 `regionLayout.groupedCountries` 判断目标地区组是否存在，避免引用已展平的地区组。
 
-`lowcost-split`、`highcost-split` 与 `auto-split` 控制地区子组；`auto-split=true` 时地区主组通过 `default-selected` 默认选中对应的自动测速子组。`lite-combine > 0` 时生成「其他节点」组。非 regex 模式显式枚举节点；regex 模式全部改为 `include-all` + `filter` 动态筛选：倍率子组使用「地区 ∩ 倍率」正则，自动子组使用地区正则并排除倍率节点。主地区组再用 `exclude-filter` 排除已拆出的节点，避免重复归属，同时显式保留倍率与自动子组候选。
+`lowcost-split`、`highcost-split` 与 `auto-split` 控制地区子组；`auto-split=true` 时地区主组通过 `default-selected` 默认选中对应的自动测速子组。`lite-combine > 0` 时生成「其他节点」组，该组始终按生成时的 `smallCountryNodes` 显式枚举。非 regex 模式显式枚举节点；regex 模式下常规地区、倍率子组和自动子组使用 `include-all` + `filter` 动态筛选：倍率子组使用「地区 ∩ 倍率」正则，自动子组使用地区正则并排除倍率节点。主地区组再用 `exclude-filter` 排除已拆出的节点，避免重复归属，同时显式保留倍率与自动子组候选。
 
 ### Tailscale 集成
 
@@ -154,7 +154,6 @@ flowchart TD
 
 - `grouptype=0`（`select`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
 - `fakeip=true`；
-- `threshold=0`，少于一个节点的地区不会生成地区组；过滤后不足 2 个地区时整体展平；
 - `lite-combine=1`、`lowcost-split=true`、`highcost-split=false`、`auto-split=true`；
 - `ipv6`、`full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
 

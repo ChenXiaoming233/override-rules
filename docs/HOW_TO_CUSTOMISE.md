@@ -33,13 +33,12 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
 }
 ```
 
-而 `grouptype`、`threshold`、`fakeip` 这类带类型语义的默认值，直接修改 `src/args/schema.ts`：
+而 `grouptype`、`fakeip` 这类带类型语义的默认值，直接修改 `src/args/schema.ts`：
 
 ```typescript
 // src/args/schema.ts
 export const ARG_DEFAULTS = {
     groupType: 0, // 0=select，1=url-test，2=load-balance
-    countryThreshold: 0,
     fakeIPEnabled: true,
     splitLowCost: true,
     splitHighCost: false,

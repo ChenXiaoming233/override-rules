@@ -8,10 +8,10 @@
 import { countryExcludeRegexMap, countryRegexMap } from "../catalog/countries";
 import { PROXY_GROUPS } from "../catalog/group-names";
 import { HIGH_COST_NODE_MATCHER, LOW_COST_NODE_MATCHER } from "../catalog/low-cost";
-import { getActiveCountryNames } from "./active-countries";
+import { getSortedCountryNames } from "./active-countries";
 import type { NodeAnalysis, ProxyNode, RegionLayout } from "../types/proxy";
 
-/** 生成地区组所需的最少达标地区数；不足时展平到上层代理组。 */
+/** 生成常规地区组所需的最少地区数；不足且没有小地区时展平到上层代理组。 */
 const MIN_REGION_GROUPS = 2;
 
 /**
@@ -82,9 +82,8 @@ function collectTailscale(nodes: ProxyNode[]): ProxyNode[] {
 /**
  * 对节点列表执行全部分类。
  * @param nodes - 上游订阅的节点列表（`config.proxies`）
- * @param threshold - 地区节点数量的最小阈值
  */
-export function analyzeNodes(nodes: ProxyNode[], threshold: number, liteCombine = 0): NodeAnalysis {
+export function analyzeNodes(nodes: ProxyNode[], liteCombine = 1): NodeAnalysis {
     const { landingNodes, nonLandingNodes } = splitByLanding(nodes);
     // 只要出现落地节点就启用落地相关代理组；全落地时非落地候选自然为空。
     const landing = landingNodes.length > 0;
@@ -92,7 +91,7 @@ export function analyzeNodes(nodes: ProxyNode[], threshold: number, liteCombine 
     // 链式代理激活时，国家/低倍率分类只扫描非落地节点。
     const scopedNodes = landing ? nonLandingNodes : nodes;
     const countryNodes = collectCountries(scopedNodes);
-    const countryNames = getActiveCountryNames(countryNodes, threshold);
+    const countryNames = getSortedCountryNames(countryNodes);
     const lowCostNodes = collectLowCost(scopedNodes);
     const highCostNodes = collectHighCost(scopedNodes, lowCostNodes);
     const tailscaleNodes = collectTailscale(nodes);
@@ -104,7 +103,7 @@ export function analyzeNodes(nodes: ProxyNode[], threshold: number, liteCombine 
     const smallCountrySet = new Set(smallCountries);
     const regularCountryNames = countryNames.filter((country) => !smallCountrySet.has(country));
     const regularCountryNodes = Object.fromEntries(
-        Object.entries(countryNodes).filter(([country]) => !smallCountrySet.has(country))
+        regularCountryNames.map((country) => [country, countryNodes[country]])
     );
     const smallCountryNodes = smallCountries.flatMap((country) => countryNodes[country]);
     const lowCostNames = new Set(lowCostNodes.map((node) => node.name));
