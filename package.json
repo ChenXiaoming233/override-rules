@@ -10,6 +10,7 @@
     "build": "npm run typecheck && node scripts/build.mjs",
     "generate": "tsx scripts/yaml_generator/generator.ts",
     "test": "node --import tsx --test \"tests/**/*.test.ts\"",
+    "validate:providers": "tsx scripts/validate-rule-providers.ts",
     "artifacts": "npm run build && npm run generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

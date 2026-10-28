@@ -31,5 +31,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Validate rule providers
+        run: npm run validate:providers
+
       - name: Verify reproducible artifacts build
         run: npm run artifacts

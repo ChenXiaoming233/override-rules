@@ -35,6 +35,7 @@
    - `npm run build`: 运行 `build.mjs` 脚本，同时编译生成未压缩的 `convert.js` 与经过强力压缩的 `convert.min.js`，并在顶部注入开源版权声明。
    - `npm run generate`: 运行 YAML 覆写配置生成器，更新 `yamls/` 目录内的排列组合文件。
    - `npm run artifacts`: 一键依次执行上述所有构建与生成阶段。
+   - `npm run validate:providers`: 下载所有 Rule Provider，并校验声明的 `format`、`behavior` 与实际内容是否一致。新增或修改 provider 时必须运行。
 
    > **建议**：推荐在提交相关修改前，在终端运行 `npm run artifacts` 进行本地全量测试（确保没有编译报错、产生的体积符合预期）。
 
