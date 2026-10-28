@@ -1,5 +1,36 @@
 # Changelog
 
+## [2.7.0](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.6.0...src-v2.7.0) (2026-10-28)
+
+
+### Bug Fixes
+
+- 排除本地网络发现流量 ([f21023a](https://github.com/ChenXiaoming233/override-rules/commit/f21023af63a79c6e7a1e6ca1cdac7a8bf3581ef7))
+- 修复搜狗规则优先级并启用进程匹配 ([69a6035](https://github.com/ChenXiaoming233/override-rules/commit/69a603577c065015f99215e30548f4fa158d4293))
+- 修复 Bing 代理组图标地址 ([2eccb97](https://github.com/ChenXiaoming233/override-rules/commit/2eccb9760a556de236610754dbe30398f5fc8854))
+
+
+### Documentation
+
+- 去除 README.md 中的 AFF 信息 ([c0576a1](https://github.com/ChenXiaoming233/override-rules/commit/c0576a11bbaeeafd9c30d122300934de6f949f6e))
+
+
+### Features
+
+- 将地区低倍率子组改为 url-test ([5cfd551](https://github.com/ChenXiaoming233/override-rules/commit/5cfd5518789d3f82e4040b7b8d384c135a38a624))
+- 调整代理组输出顺序 ([b5bdafb](https://github.com/ChenXiaoming233/override-rules/commit/b5bdafbf6c53a09fdc15f331f27ceafe958dcdbb))
+- 默认开启地区自动测速子组 ([c48e912](https://github.com/ChenXiaoming233/override-rules/commit/c48e912aa324c2ebf3766be530082485cc74bd4d))
+- 优化地区自动组默认项与服务组直连顺序 ([6620690](https://github.com/ChenXiaoming233/override-rules/commit/6620690ef8d53bb15f8dab59a06566192b0697bf))
+
+
+### Refactoring
+
+- 移除 threshold 并统一小地区合并逻辑 ([3b87161](https://github.com/ChenXiaoming233/override-rules/commit/3b87161747e36ab84c4c20ceebe81676c12de4be))
+
+
+### Testing
+
+- 增加 Rule Provider 格式契约校验 ([b982da5](https://github.com/ChenXiaoming233/override-rules/commit/b982da5e13fe1d4012d802dae25a2a363608b813))
 ## [2.6.0](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.5.12...src-v2.6.0) (2026-10-24)
 
 
