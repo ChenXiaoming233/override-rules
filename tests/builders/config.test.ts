@@ -248,6 +248,53 @@ describe("assembleConfig", () => {
         assert.ok(result["geox-url"]?.geoip);
     });
 
+    it("按地区、服务、倍率和自动子组的顺序组装代理组", () => {
+        const result = run(
+            { threshold: "1", "highcost-split": "true" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港 0.2x" },
+                    { name: "美国01" },
+                    { name: "美国 0.2x" },
+                    { name: "美国 3.0x" },
+                ],
+            }
+        );
+        const groupNames = (result["proxy-groups"] ?? []).map((item) => item.name);
+        const selectIndex = groupNames.indexOf(PROXY_GROUPS.SELECT);
+        const manualIndex = groupNames.indexOf(PROXY_GROUPS.MANUAL);
+        const countryIndex = groupNames.indexOf("香港节点");
+        const serviceIndex = groupNames.indexOf(PROXY_GROUPS.AI_SERVICE);
+        const lowCostIndex = groupNames.indexOf(PROXY_GROUPS.LOW_COST);
+        const highCostIndex = groupNames.indexOf(PROXY_GROUPS.HIGH_COST);
+        const countryLowCostIndex = groupNames.indexOf("香港 低倍率");
+        const autoIndex = groupNames.indexOf("香港 自动");
+        const tailIndex = groupNames.indexOf(PROXY_GROUPS.AD_BLOCK);
+        const globalIndex = groupNames.indexOf(PROXY_GROUPS.GLOBAL);
+
+        assert.ok(selectIndex >= 0);
+        assert.ok(manualIndex >= 0);
+        assert.ok(countryIndex >= 0);
+        assert.ok(serviceIndex >= 0);
+        assert.ok(lowCostIndex >= 0);
+        assert.ok(highCostIndex >= 0);
+        assert.ok(countryLowCostIndex >= 0);
+        assert.ok(autoIndex >= 0);
+        assert.ok(tailIndex >= 0);
+        assert.ok(globalIndex >= 0);
+
+        assert.ok(selectIndex < manualIndex);
+        assert.ok(manualIndex < countryIndex);
+        assert.ok(countryIndex < serviceIndex);
+        assert.ok(serviceIndex < lowCostIndex);
+        assert.ok(lowCostIndex < highCostIndex);
+        assert.ok(highCostIndex < countryLowCostIndex);
+        assert.ok(countryLowCostIndex < autoIndex);
+        assert.ok(autoIndex < tailIndex);
+        assert.ok(tailIndex < globalIndex);
+    });
+
     it("默认拆分地区低倍率与自动子组", () => {
         const result = run(
             { threshold: "1" },

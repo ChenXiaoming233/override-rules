@@ -1,5 +1,5 @@
 /**
- * 代理组组装：将前置组、服务组、尾部固定组、地区组按既定顺序拼接为完整的代理组列表。
+ * 代理组组装：将前置组、地区主组、服务组、倍率与地区子组、尾部固定组拼接为完整列表。
  *
  * 各类代理组的定义分别位于：
  * - 服务组：`catalog/service-groups.ts`
@@ -239,8 +239,13 @@ function buildTailGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
     ];
 }
 
-/** 低倍率组与各地区组。 */
-function buildRegionGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
+interface RegionGroupBlocks {
+    countryGroups: Array<ProxyGroup | null>;
+    costGroups: Array<ProxyGroup | null>;
+}
+
+/** 国家/地区主组，以及全局倍率组和各地区的倍率、自动子组。 */
+function buildRegionGroups(ctx: GroupBuildContext): RegionGroupBlocks {
     const { flags, nodes } = ctx;
     const hasLowCost = nodes.lowCostNodes.length > 0 || flags.regexFilter;
     const hasHighCost = nodes.highCostNodes.length > 0 || flags.regexFilter;
@@ -286,15 +291,16 @@ function buildRegionGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
               })
             : null;
 
-    return [
-        lowCostGroup,
-        highCostGroup,
-        ...countryGroups.groups,
-        ...countryGroups.lowCostGroups,
-        ...countryGroups.highCostGroups,
-        ...countryGroups.autoGroups,
-        otherGroup,
-    ];
+    return {
+        countryGroups: [...countryGroups.groups, otherGroup],
+        costGroups: [
+            lowCostGroup,
+            highCostGroup,
+            ...countryGroups.lowCostGroups,
+            ...countryGroups.highCostGroups,
+            ...countryGroups.autoGroups,
+        ],
+    };
 }
 
 /**
@@ -303,11 +309,13 @@ function buildRegionGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
  * @returns 代理组数组（不含 GLOBAL，GLOBAL 由 `builders/config.ts` 追加）
  */
 export function buildProxyGroups(ctx: GroupBuildContext): ProxyGroup[] {
+    const regionGroups = buildRegionGroups(ctx);
     const groups: Array<ProxyGroup | null> = [
         ...buildFrontGroups(ctx),
+        ...regionGroups.countryGroups,
         ...buildServiceGroups(ctx),
+        ...regionGroups.costGroups,
         ...buildTailGroups(ctx),
-        ...buildRegionGroups(ctx),
     ];
 
     return groups.filter(isNotNull);
