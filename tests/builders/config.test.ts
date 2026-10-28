@@ -303,6 +303,7 @@ describe("assembleConfig", () => {
             }
         );
 
+        assert.equal(group(result, "香港 低倍率")?.type, "url-test");
         assert.deepEqual(group(result, "香港 低倍率")?.proxies, ["香港 0.2x"]);
         assert.equal(group(result, "香港 自动")?.type, "url-test");
         assert.deepEqual(group(result, "香港 自动")?.proxies, ["香港01"]);
@@ -440,6 +441,7 @@ describe("assembleConfig", () => {
         );
 
         const lowCost = group(result, "香港 低倍率");
+        assert.equal(lowCost?.type, "url-test");
         assert.equal(lowCost?.["include-all"], true);
         assert.ok(lowCost?.filter?.includes("香港"));
         assert.ok(lowCost?.filter?.includes("省流"));

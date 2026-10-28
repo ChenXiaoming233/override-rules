@@ -102,21 +102,16 @@ function buildCountryGroups(ctx: GroupBuildContext): CountryGroupBuildResult {
             const name = `${country}${LOW_COST_SUFFIX}`;
             result.lowCostGroups.push(
                 flags.regexFilter
-                    ? selectGroup(
-                          name,
-                          meta.icon,
-                          [
-                              {
-                                  "include-all": true,
-                                  filter: combineNodeFilters(
-                                      meta.pattern,
-                                      LOW_COST_NODE_MATCHER.pattern
-                                  ),
-                              },
-                          ],
-                          true
-                      )
-                    : selectGroup(name, meta.icon, lowCostNames)
+                    ? urlTestGroup(name, meta.icon, [
+                          {
+                              "include-all": true,
+                              filter: combineNodeFilters(
+                                  meta.pattern,
+                                  LOW_COST_NODE_MATCHER.pattern
+                              ),
+                          },
+                      ])
+                    : urlTestGroupWithProxies(name, meta.icon, lowCostNames)
             );
             childNames.push(name);
         }

@@ -65,7 +65,7 @@
 *   `regex`：各国家/地区代理组与「手动选择」组改用 `include-all` 模式，由 Mihomo 内核在运行时动态填充节点（地区组再附加正则 `filter`；展平后的节点候选通过 `exclude-filter` 排除落地节点），而非在脚本执行时枚举节点名称（默认 false）[^regex]
 *   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）。路由会排除 RFC1918、IPv4 link-local/组播/广播以及 IPv6 link-local/组播地址，避免 LocalSend、mDNS、SSDP/DLNA 等局域网发现流量被 TUN 接管；无 Tailscale 节点时还会排除 IPv6 ULA `fc00::/7`
 *   `lite-combine`：将节点数不超过该值的地区合并到统一的“其他节点”代理组；设为 0 可禁用（默认 1）。该组始终按生成时的节点列表显式枚举，不受 `regex` 动态筛选影响。
-*   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立子组（如“新加坡 低倍率”，默认 true）
+*   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立的 `url-test` 子组（如“新加坡 低倍率”，默认 true）
 *   `highcost-split`：是否将各地区内的高倍率节点拆分为独立子组（如“新加坡 高倍率”，默认 false）
 *   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 true）；开启时地区主组会通过 `default-selected` 默认选中对应自动子组
 
