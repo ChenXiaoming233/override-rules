@@ -248,7 +248,7 @@ describe("assembleConfig", () => {
         assert.ok(result["geox-url"]?.geoip);
     });
 
-    it("默认拆分地区低倍率子组", () => {
+    it("默认拆分地区低倍率与自动子组", () => {
         const result = run(
             { threshold: "1" },
             {
@@ -262,7 +262,34 @@ describe("assembleConfig", () => {
         );
 
         assert.deepEqual(group(result, "香港 低倍率")?.proxies, ["香港 0.2x"]);
-        assert.deepEqual(group(result, "香港节点")?.proxies, ["香港 低倍率", "香港01"]);
+        assert.equal(group(result, "香港 自动")?.type, "url-test");
+        assert.deepEqual(group(result, "香港 自动")?.proxies, ["香港01"]);
+        assert.deepEqual(group(result, "香港节点")?.proxies, [
+            "香港 低倍率",
+            "香港 自动",
+            "香港01",
+        ]);
+        const hongKong = group(result, "香港节点");
+        assert.equal(hongKong?.type === "select" && hongKong["default-selected"], "香港 自动");
+    });
+
+    it("auto-split=false 时地区组不设置默认自动子组", () => {
+        const result = run(
+            { threshold: "1", "auto-split": "false" },
+            {
+                proxies: [
+                    { name: "香港01" },
+                    { name: "香港02" },
+                    { name: "美国01" },
+                    { name: "美国02" },
+                ],
+            }
+        );
+        const hongKong = group(result, "香港节点");
+
+        assert.equal(hongKong?.type, "select");
+        assert.ok(!("default-selected" in (hongKong ?? {})));
+        assert.equal(group(result, "香港 自动"), undefined);
     });
 
     it("lite-combine 把单节点地区合并进其他节点", () => {
@@ -323,5 +350,10 @@ describe("assembleConfig", () => {
         assert.ok(lowCost?.filter?.includes("香港"));
         assert.ok(lowCost?.filter?.includes("省流"));
         assert.equal(lowCost?.proxies, undefined);
+
+        const hongKong = group(result, "香港节点");
+        assert.equal(hongKong?.type === "select" && hongKong["default-selected"], "香港 自动");
+        assert.equal(hongKong?.["include-all"], true);
+        assert.ok(hongKong?.proxies?.includes("香港 自动"));
     });
 });

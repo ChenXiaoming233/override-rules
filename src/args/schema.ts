@@ -14,8 +14,8 @@ export const ARG_DEFAULTS = {
     splitLowCost: true,
     /** 默认不拆分高倍率节点。 */
     splitHighCost: false,
-    /** 默认不为 select 地区组额外创建自动测速子组。 */
-    autoSplit: false,
+    /** 默认为 select 地区组创建自动测速子组，并将其设为地区主组的默认选中项。 */
+    autoSplit: true,
     /** 节点数不超过该值的地区合并为「其他节点」；0 表示禁用。 */
     liteCombine: 1,
 } as const;

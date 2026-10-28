@@ -68,7 +68,7 @@
 *   `lite-combine`：将节点数不超过该值的地区合并到统一的“其他节点”代理组；设为 0 可禁用（默认 1）
 *   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立子组（如“新加坡 低倍率”，默认 true）
 *   `highcost-split`：是否将各地区内的高倍率节点拆分为独立子组（如“新加坡 高倍率”，默认 false）
-*   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 false）；开启时地区主组会通过 `default-selected` 默认选中对应自动子组
+*   `auto-split`：当 `grouptype=0` 时，是否为每个地区创建 `url-test` 自动子组（如“新加坡 自动”，默认 true）；开启时地区主组会通过 `default-selected` 默认选中对应自动子组
 
 > **向后兼容**：旧的 `loadbalance` 参数仍然可用。当 `grouptype` 未指定时，`loadbalance=true` 等价于 `grouptype=2`，`loadbalance=false` 等价于 `grouptype=1`。
 

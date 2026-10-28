@@ -12,6 +12,7 @@ describe("buildFeatureFlags", () => {
         assert.equal(flags.fakeIPEnabled, true);
         assert.equal(flags.ipv6Enabled, false);
         assert.equal(flags.regexFilter, false);
+        assert.equal(flags.autoSplit, true);
     });
 
     it("解析 grouptype 的合法取值", () => {
@@ -49,6 +50,10 @@ describe("buildFeatureFlags", () => {
         assert.equal(flags.splitHighCost, true);
         assert.equal(flags.autoSplit, true);
         assert.equal(flags.liteCombine, 3);
+    });
+
+    it("auto-split 显式传 false 时关闭自动子组", () => {
+        assert.equal(buildFeatureFlags({ "auto-split": "false" }).autoSplit, false);
     });
 
     it("lite-combine 为负数时按禁用处理", () => {

@@ -43,7 +43,7 @@ export const ARG_DEFAULTS = {
     fakeIPEnabled: true,
     splitLowCost: true,
     splitHighCost: false,
-    autoSplit: false,
+    autoSplit: true,
     liteCombine: 1,
 } as const;
 ```

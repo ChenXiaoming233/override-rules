@@ -154,7 +154,7 @@ flowchart TD
 - `grouptype=0`（`select`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
 - `fakeip=true`；
 - `threshold=0`，少于一个节点的地区不会生成地区组；过滤后不足 2 个地区时整体展平；
-- `lite-combine=1`、`lowcost-split=true`、`highcost-split=false`、`auto-split=false`；
+- `lite-combine=1`、`lowcost-split=true`、`highcost-split=false`、`auto-split=true`；
 - `ipv6`、`full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
 
 布尔参数接受 `true`/`false` 和 `1`/`0` 形式。
