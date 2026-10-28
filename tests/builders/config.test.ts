@@ -107,6 +107,7 @@ describe("assembleConfig", () => {
         assert.equal(result["mixed-port"], 7890);
         assert.equal(result["external-controller"], ":9999");
         assert.equal(result.mode, "rule");
+        assert.equal(result["find-process-mode"], "always");
     });
 
     it("full 默认关闭", () => {

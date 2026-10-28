@@ -29,6 +29,22 @@ describe("buildRules", () => {
         assert.ok(rules.includes("GEOSITE,cn,DIRECT"));
     });
 
+    it("SogouInput 优先于广告规则，避免放行域名被广告规则拦截", () => {
+        const rules = buildRules({ quicEnabled: true, hasTailscale: false });
+        const sogouIndex = rules.indexOf("RULE-SET,SogouInput,搜狗输入法");
+        const adIndexes = [
+            "RULE-SET,ADBlock,广告拦截",
+            "RULE-SET,QiufengADBlock,广告拦截",
+            "RULE-SET,AdditionalFilter,广告拦截",
+        ].map((rule) => rules.indexOf(rule));
+
+        assert.notEqual(sogouIndex, -1);
+        for (const adIndex of adIndexes) {
+            assert.notEqual(adIndex, -1);
+            assert.ok(sogouIndex < adIndex, "SogouInput 必须先于所有广告规则");
+        }
+    });
+
     it("Tailscale 存在时生成对应分流规则", () => {
         const rules = buildRules({ quicEnabled: true, hasTailscale: true });
         assert.ok(rules.includes("IP-CIDR,100.64.0.0/10,Tailscale,no-resolve"));

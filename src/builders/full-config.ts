@@ -21,7 +21,7 @@ export function buildFullConfig(flags: FeatureFlags): ClashConfig {
         mode: "rule",
         "unified-delay": true,
         "tcp-concurrent": true,
-        "find-process-mode": "off",
+        "find-process-mode": "always",
         "log-level": "info",
         "geodata-loader": "standard",
         "external-controller": ":9999",
