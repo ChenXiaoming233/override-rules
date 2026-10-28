@@ -63,7 +63,7 @@
 *   `fakeip`：DNS 增强模式使用 `fake-ip` 而不是 `redir-host`（开启后可能有助于解决 TUN 模式无法上网的问题；未传参时默认 `true`，显式传 `false` 时使用 `redir-host`）
 *   `quic`：允许 QUIC 流量（UDP 443，默认 false）[^quic]
 *   `regex`：各国家/地区代理组与「手动选择」组改用 `include-all` 模式，由 Mihomo 内核在运行时动态填充节点（地区组再附加正则 `filter`；展平后的节点候选通过 `exclude-filter` 排除落地节点），而非在脚本执行时枚举节点名称（默认 false）[^regex]
-*   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）
+*   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）。路由会排除 RFC1918、IPv4 link-local/组播/广播以及 IPv6 link-local/组播地址，避免 LocalSend、mDNS、SSDP/DLNA 等局域网发现流量被 TUN 接管；无 Tailscale 节点时还会排除 IPv6 ULA `fc00::/7`
 *   `lite-combine`：将节点数不超过该值的地区合并到统一的“其他节点”代理组；设为 0 可禁用（默认 1）。该组始终按生成时的节点列表显式枚举，不受 `regex` 动态筛选影响。
 *   `lowcost-split`：是否将各地区内的低倍率节点拆分为独立子组（如“新加坡 低倍率”，默认 true）
 *   `highcost-split`：是否将各地区内的高倍率节点拆分为独立子组（如“新加坡 高倍率”，默认 false）
@@ -135,6 +135,8 @@ proxies:
     ephemeral: true
     udp: true
 ```
+
+存在 Tailscale 节点时，TUN 不会整体排除 IPv6 ULA `fc00::/7`，以免 `fd7a:115c:a1e0::/48` 流量绕过 TUN；IPv4 本地网络、IPv6 link-local 与 IPv6 组播地址仍始终排除。
 
 ### 关于自动生成的 YAML 格式覆写
 

@@ -56,18 +56,48 @@ describe("buildDns", () => {
 });
 
 describe("buildTunConfig", () => {
-    it("无 Tailscale 时排除 Tailscale 地址段", () => {
+    it("无 Tailscale 时排除 Tailscale、ULA 与本地网络地址段", () => {
         const tun = buildTunConfig(true, false);
         assert.deepEqual(tun["route-exclude-address"], [
             "100.64.0.0/10",
             "fd7a:115c:a1e0::/48",
+            "fc00::/7",
+            "10.0.0.0/8",
+            "172.16.0.0/12",
             "192.168.0.0/16",
+            "169.254.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "fe80::/10",
+            "ff00::/8",
         ]);
     });
 
-    it("有 Tailscale 时不排除 Tailscale 地址段", () => {
+    it("有 Tailscale 时保留其地址段并排除通用本地网络地址段", () => {
         const tun = buildTunConfig(true, true);
-        assert.deepEqual(tun["route-exclude-address"], ["192.168.0.0/16"]);
+        assert.deepEqual(tun["route-exclude-address"], [
+            "10.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "169.254.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "fe80::/10",
+            "ff00::/8",
+        ]);
+    });
+
+    it("始终排除 IPv4 与 IPv6 本地发现地址", () => {
+        const addresses = buildTunConfig(true, false)["route-exclude-address"];
+        for (const address of [
+            "169.254.0.0/16",
+            "224.0.0.0/4",
+            "255.255.255.255/32",
+            "fe80::/10",
+            "ff00::/8",
+        ]) {
+            assert.ok(addresses.includes(address), `缺少本地网络地址段 ${address}`);
+        }
     });
 
     it("保留设备名与 MTU", () => {
