@@ -30,7 +30,7 @@ export const ICONS = {
     finance: `${SELF}/Nasdaq.png`,
     apple: `${QURE}/Apple_2.png`,
     google: `${MINI}/Google.png`,
-    bing: `${QURE}/Bing.png`,
+    bing: `${MINI}/Bing.png`,
     microsoft: `${SELF}/Microsoft_Copilot.png`,
     oneDrive: `${SELF}/Onedrive.png`,
     xbox: `${QURE}/Xbox.png`,
