@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.8.0](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.7.0...src-v2.8.0) (2026-11-22)
+
+### Documentation
+
+- 同步 DNS 与 IPv6 配置说明 ([4ca1471](https://github.com/ChenXiaoming233/override-rules/commit/4ca1471defedf8cfcfdfec69e9474cef0f73260e))
+
+### Features
+
+- 更新覆写脚本的默认 DNS 配置 ([638b537](https://github.com/ChenXiaoming233/override-rules/commit/638b5376b9fddd45d33ad11ac459cea39d724379))
+
 ## [2.7.0](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.6.0...src-v2.7.0) (2026-10-28)
 
 
