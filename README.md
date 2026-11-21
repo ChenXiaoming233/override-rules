@@ -43,7 +43,7 @@
 目前支持的参数：
 
 *   `grouptype`：地区代理组类型（0=手动选择 select，1=自动测速 url-test，2=负载均衡 load-balance，默认 0）
-*   `ipv6`：启用 IPv6 支持（默认 false）
+*   `ipv6`：设置 `dns.ipv6` 和完整配置中的顶层 `ipv6`（默认 `false`）。
 *   `full`：生成完整配置（适合纯内核启动，默认 false）
 *   `keepalive`：启用 TCP Keep Alive（默认 false）[^fn2]
 *   `fakeip`：DNS 增强模式使用 `fake-ip` 而不是 `redir-host`（开启后可能有助于解决 TUN 模式无法上网的问题；未传参时默认 `true`，显式传 `false` 时使用 `redir-host`）

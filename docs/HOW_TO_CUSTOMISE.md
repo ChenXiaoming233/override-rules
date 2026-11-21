@@ -20,7 +20,7 @@ npm install
 
 通过 URL 传递参数（如 `#fakeip=true`）是控制脚本行为的常用方式。各参数的默认值集中在 `src/args/schema.ts` 的 `ARG_DEFAULTS` 中；布尔开关的默认值则在 `src/args/parse.ts` 的 `buildFeatureFlags` 里通过解析函数的第二个参数指定。
 
-例如，要默认开启 IPv6 支持：
+例如，要默认开启 DNS 和完整配置的 IPv6 支持：
 
 ```typescript
 // src/args/parse.ts

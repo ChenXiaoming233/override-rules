@@ -155,7 +155,8 @@ flowchart TD
 - `grouptype=0`（`select`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
 - `fakeip=true`；
 - `lite-combine=1`、`lowcost-split=true`、`highcost-split=false`、`auto-split=true`；
-- `ipv6`、`full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
+- `ipv6` 默认关闭，同时控制 `dns.ipv6` 和完整配置中的顶层 `ipv6`。
+- `full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
 
 布尔参数接受 `true`/`false` 和 `1`/`0` 形式。
 
@@ -165,7 +166,7 @@ flowchart TD
 
 - 始终保留上游 `hosts`；
 - 在生成 DNS 配置后，合并上游的 `nameserver-policy`、`proxy-server-nameserver-policy` 和 `fake-ip-filter`；
-- 脚本生成的 DNS 核心设置（如增强模式、IPv6 开关和默认 DNS 列表）保持优先级。
+- 脚本生成的 DNS 核心设置保持优先级。默认监听 `:53`，解析请求遵循分流规则，`nameserver` 使用 Cloudflare 和 Google 的 DoH 服务。
 
 这样既能维持脚本的统一 DNS 行为，也能保留订阅提供方针对特定域名的策略。
 
