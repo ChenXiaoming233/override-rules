@@ -115,6 +115,18 @@ describe("assembleConfig", () => {
         assert.equal(result["mixed-port"], undefined);
     });
 
+    it("DNS 默认关闭 IPv6，显式 ipv6 参数同时控制 DNS 和完整内核配置", () => {
+        const defaults = run({ full: "true" }, CONFIG);
+        assert.equal(defaults.dns?.ipv6, false);
+        assert.equal(defaults.ipv6, false);
+
+        for (const enabled of [true, false]) {
+            const result = run({ full: "true", ipv6: String(enabled) }, CONFIG);
+            assert.equal(result.dns?.ipv6, enabled);
+            assert.equal(result.ipv6, enabled);
+        }
+    });
+
     it("无地区组时三大主组直接使用节点（回归 #64）", () => {
         const result = run({}, { proxies: [{ name: "NodeA" }, { name: "NodeB" }] });
 

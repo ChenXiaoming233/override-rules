@@ -8,92 +8,15 @@ import type { DnsConfig, DnsPolicyValue } from "../types/clash";
  * 默认的 fake-ip 过滤域名列表：这些域名不会被 fake-ip 机制代理。
  */
 const FAKE_IP_FILTER = [
-    "geosite:connectivity-check",
-    "Mijia Cloud",
-    "dig.io.mi.com",
-    "localhost.ptlogin2.qq.com",
-    "*.icloud.com",
-    "*.stun.*.*",
-    "*.stun.*.*.*",
     "*.lan",
-    "*.localdomain",
-    "*.example",
-    "*.invalid",
-    "*.localhost",
-    "*.test",
     "*.local",
-    "*.home.arpa",
+    "*.arpa",
     "time.*.com",
-    "time.*.gov",
-    "time.*.edu.cn",
-    "time.*.apple.com",
-    "time1.*.com",
-    "time2.*.com",
-    "time3.*.com",
-    "time4.*.com",
-    "time5.*.com",
-    "time6.*.com",
-    "time7.*.com",
     "ntp.*.com",
-    "ntp1.*.com",
-    "ntp2.*.com",
-    "ntp3.*.com",
-    "ntp4.*.com",
-    "ntp5.*.com",
-    "ntp6.*.com",
-    "ntp7.*.com",
-    "*.time.edu.cn",
-    "*.ntp.org.cn",
-    "+.pool.ntp.org",
-    "time1.cloud.tencent.com",
-    "stun.*.*",
-    "stun.*.*.*",
-    "swscan.apple.com",
-    "mesu.apple.com",
-    "music.163.com",
-    "*.music.163.com",
-    "*.126.net",
-    "musicapi.taihe.com",
-    "music.taihe.com",
-    "songsearch.kugou.com",
-    "trackercdn.kugou.com",
-    "*.kuwo.cn",
-    "api-jooxtt.sanook.com",
-    "api.joox.com",
-    "y.qq.com",
-    "*.y.qq.com",
-    "streamoc.music.tc.qq.com",
-    "mobileoc.music.tc.qq.com",
-    "isure.stream.qqmusic.qq.com",
-    "dl.stream.qqmusic.qq.com",
-    "aqqmusic.tc.qq.com",
-    "amobile.music.tc.qq.com",
+    "+.market.xiaomi.com",
     "localhost.ptlogin2.qq.com",
-    "*.msftconnecttest.com",
     "*.msftncsi.com",
-    "*.xiami.com",
-    "*.music.migu.cn",
-    "music.migu.cn",
-    "+.wotgame.cn",
-    "+.wggames.cn",
-    "+.wowsgame.cn",
-    "+.wargaming.net",
-    "*.*.*.srv.nintendo.net",
-    "*.*.stun.playstation.net",
-    "xbox.*.*.microsoft.com",
-    "*.*.xboxlive.com",
-    "*.ipv6.microsoft.com",
-    "teredo.*.*.*",
-    "teredo.*.*",
-    "speedtest.cros.wr.pvp.net",
-    "+.jjvip8.com",
-    "www.douyu.com",
-    "activityapi.huya.com",
-    "activityapi.huya.com.w.cdngslb.com",
-    "www.bilibili.com",
-    "api.bilibili.com",
-    "a.w.bilicdn1.com",
-    "+.apt-agent.com",
+    "www.msftconnecttest.com",
 ];
 
 /** 支持从上游配置继承的 DNS Policy 字段。 */
@@ -155,36 +78,6 @@ function inheritDnsFields(generated: DnsConfig, upstream?: DnsConfig): DnsConfig
     return merged;
 }
 
-interface BuildDnsConfigInput {
-    mode: "redir-host" | "fake-ip";
-    ipv6Enabled: boolean;
-    fakeIpFilter?: string[];
-}
-
-/** 生成脚本控制的核心 DNS 设置。 */
-function buildDnsConfig({ mode, ipv6Enabled, fakeIpFilter }: BuildDnsConfigInput): DnsConfig {
-    const config: DnsConfig = {
-        enable: true,
-        ipv6: ipv6Enabled,
-        "prefer-h3": true,
-        "enhanced-mode": mode,
-        nameserver: ["system", "223.5.5.5", "119.29.29.29", "180.184.1.1"],
-        fallback: [
-            "quic://dns0.eu",
-            "https://dns.cloudflare.com/dns-query",
-            "https://dns.sb/dns-query",
-            "tcp://208.67.222.222",
-            "tcp://8.26.56.2",
-        ],
-    };
-
-    if (fakeIpFilter) {
-        config["fake-ip-filter"] = fakeIpFilter;
-    }
-
-    return config;
-}
-
 /** 构建 DNS 配置的输入参数。 */
 export interface BuildDnsInput {
     fakeIPEnabled: boolean;
@@ -198,9 +91,38 @@ export interface BuildDnsInput {
  * @param input - 详见 `BuildDnsInput`
  */
 export function buildDns({ fakeIPEnabled, ipv6Enabled, upstreamDns }: BuildDnsInput): DnsConfig {
-    const generated = fakeIPEnabled
-        ? buildDnsConfig({ mode: "fake-ip", ipv6Enabled, fakeIpFilter: FAKE_IP_FILTER })
-        : buildDnsConfig({ mode: "redir-host", ipv6Enabled });
+    const generated: DnsConfig = {
+        enable: true,
+        listen: ":53",
+        "enhanced-mode": fakeIPEnabled ? "fake-ip" : "redir-host",
+        ...(fakeIPEnabled && {
+            "fake-ip-range": "198.18.0.1/16",
+            "fake-ip-range6": "fdfe:dcba:9876::1/64",
+            "fake-ip-filter-mode": "blacklist",
+            "fake-ip-filter": [...FAKE_IP_FILTER],
+        }),
+        "prefer-h3": false,
+        "respect-rules": true,
+        "use-hosts": false,
+        "use-system-hosts": false,
+        ipv6: ipv6Enabled,
+        "default-nameserver": ["tls://223.5.5.5", "tls://223.6.6.6"],
+        nameserver: ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"],
+        "nameserver-policy": {},
+        "direct-nameserver-follow-policy": false,
+        "fallback-filter": {
+            geoip: true,
+            "geoip-code": "CN",
+            ipcidr: ["240.0.0.0/4", "0.0.0.0/32"],
+            domain: ["+.google.com", "+.facebook.com", "+.youtube.com"],
+        },
+        fallback: ["tls://8.8.4.4", "tls://1.1.1.1"],
+        "proxy-server-nameserver": [
+            "https://dns.alidns.com/dns-query",
+            "https://doh.pub/dns-query",
+        ],
+        "direct-nameserver": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"],
+    };
 
     return inheritDnsFields(generated, upstreamDns);
 }

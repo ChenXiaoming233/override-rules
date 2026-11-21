@@ -6,7 +6,7 @@ https://github.com/ChenXiaoming233/override-rules
 - grouptype: 地区代理组类型（0=select 手动选择, 1=url-test 自动测速, 2=load-balance 负载均衡，默认 1）
   - 向后兼容：若未传 grouptype 但传了 loadbalance，则 loadbalance=true 映射为 grouptype=2，loadbalance=false 映射为 grouptype=1
 - landing: 自动检测带 `dialer-proxy` 字段的节点，无需用户传参
-- ipv6: 启用 IPv6 支持（默认 false）
+- ipv6: 设置 DNS 和完整配置的 IPv6 开关（默认 false）
 - tun: 启用 TUN 模式（默认 false）
 - full: 输出完整配置（适合纯内核启动，默认 false）
 - keepalive: 启用 tcp-keep-alive（默认 false）

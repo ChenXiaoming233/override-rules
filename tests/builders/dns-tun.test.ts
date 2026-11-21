@@ -5,11 +5,32 @@ import { buildDns } from "../../src/builders/dns";
 import { buildTunConfig } from "../../src/builders/tun";
 
 describe("buildDns", () => {
-    it("fake-ip 模式包含 fake-ip-filter", () => {
+    it("fake-ip 模式输出预设的地址范围、过滤规则与解析器", () => {
         const dns = buildDns({ fakeIPEnabled: true, ipv6Enabled: false });
         assert.equal(dns["enhanced-mode"], "fake-ip");
-        assert.ok(Array.isArray(dns["fake-ip-filter"]));
-        assert.ok((dns["fake-ip-filter"] ?? []).length > 0);
+        assert.equal(dns["fake-ip-range"], "198.18.0.1/16");
+        assert.equal(dns["fake-ip-range6"], "fdfe:dcba:9876::1/64");
+        assert.equal(dns["fake-ip-filter-mode"], "blacklist");
+        assert.deepEqual(dns["fake-ip-filter"], [
+            "*.lan",
+            "*.local",
+            "*.arpa",
+            "time.*.com",
+            "ntp.*.com",
+            "+.market.xiaomi.com",
+            "localhost.ptlogin2.qq.com",
+            "*.msftncsi.com",
+            "www.msftconnecttest.com",
+        ]);
+        assert.equal(dns["respect-rules"], true);
+        assert.deepEqual(dns.nameserver, [
+            "https://cloudflare-dns.com/dns-query",
+            "https://dns.google/dns-query",
+        ]);
+        assert.deepEqual(dns["proxy-server-nameserver"], [
+            "https://dns.alidns.com/dns-query",
+            "https://doh.pub/dns-query",
+        ]);
     });
 
     it("redir-host 模式不含 fake-ip-filter", () => {
