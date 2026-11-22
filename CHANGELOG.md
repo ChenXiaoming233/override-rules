@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.8.1](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.8.0...src-v2.8.1) (2026-11-23)
+
+### Bug Fixes
+
+- 移除默认 DNS 端口监听，保留内部 DNS 解析 ([c9d7d27](https://github.com/ChenXiaoming233/override-rules/commit/c9d7d276584d0e9a0c12f0114dae29a12179a395))
+
+### Documentation
+
+- 更新 DNS 监听说明 ([d33adad](https://github.com/ChenXiaoming233/override-rules/commit/d33adad02f0d79a042c5ac9ce0f9a80a435c91ef))
+
 ## [2.8.0](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.7.0...src-v2.8.0) (2026-11-22)
 
 ### Documentation
