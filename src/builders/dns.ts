@@ -93,7 +93,6 @@ export interface BuildDnsInput {
 export function buildDns({ fakeIPEnabled, ipv6Enabled, upstreamDns }: BuildDnsInput): DnsConfig {
     const generated: DnsConfig = {
         enable: true,
-        listen: ":53",
         "enhanced-mode": fakeIPEnabled ? "fake-ip" : "redir-host",
         ...(fakeIPEnabled && {
             "fake-ip-range": "198.18.0.1/16",

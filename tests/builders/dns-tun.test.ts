@@ -8,6 +8,7 @@ describe("buildDns", () => {
     it("fake-ip 模式输出预设的地址范围、过滤规则与解析器", () => {
         const dns = buildDns({ fakeIPEnabled: true, ipv6Enabled: false });
         assert.equal(dns["enhanced-mode"], "fake-ip");
+        assert.equal(Object.hasOwn(dns, "listen"), false);
         assert.equal(dns["fake-ip-range"], "198.18.0.1/16");
         assert.equal(dns["fake-ip-range6"], "fdfe:dcba:9876::1/64");
         assert.equal(dns["fake-ip-filter-mode"], "blacklist");
@@ -64,6 +65,7 @@ describe("buildDns", () => {
             ipv6Enabled: true,
             upstreamDns: {
                 enable: true,
+                listen: ":53",
                 ipv6: false,
                 "prefer-h3": true,
                 "enhanced-mode": "fake-ip",
@@ -73,6 +75,7 @@ describe("buildDns", () => {
         });
         assert.equal(dns["enhanced-mode"], "redir-host");
         assert.equal(dns.ipv6, true);
+        assert.equal(Object.hasOwn(dns, "listen"), false);
     });
 });
 
