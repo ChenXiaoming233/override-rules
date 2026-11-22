@@ -166,7 +166,7 @@ flowchart TD
 
 - 始终保留上游 `hosts`；
 - 在生成 DNS 配置后，合并上游的 `nameserver-policy`、`proxy-server-nameserver-policy` 和 `fake-ip-filter`；
-- 脚本生成的 DNS 核心设置保持优先级。默认监听 `:53`，解析请求遵循分流规则，`nameserver` 使用 Cloudflare 和 Google 的 DoH 服务。
+- 脚本生成的 DNS 核心设置保持优先级。内部 DNS 保持启用，默认不设置 `dns.listen`。解析请求遵循分流规则，`nameserver` 使用 Cloudflare 和 Google 的 DoH 服务。
 
 这样既能维持脚本的统一 DNS 行为，也能保留订阅提供方针对特定域名的策略。
 
