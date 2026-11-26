@@ -110,7 +110,9 @@ https://raw.githubusercontent.com/ChenXiaoming233/override-rules/refs/heads/prev
 
 ### 关于 Tailscale 的说明
 
-Mihomo 内核在近期的更新中支持了 Tailscale 出站，这覆写规则也做出了更新，当检测到订阅中存在`tailscale`类型的节点时，会自动配置相关的代理组、Tun 配置和分流规则，开箱即用，支持 Magic DNS，以下是 Tailscale 节点配置的示例：
+`ts.net` 及其子域名由本机的 Tailscale MagicDNS（`100.100.100.100`）解析，跳过 fake-ip，并优先走 `DIRECT`，不依赖订阅中的 Tailscale 节点。使用此规则需运行 Mihomo 的设备已连接 Tailscale 并能访问该 DNS；仅配置下面的 Mihomo 出站不能替代本机的 Tailscale 客户端。
+
+检测到订阅中存在 `tailscale` 类型的节点时，脚本仍会创建 Tailscale 代理组，并将 Tailscale IP 网段的规则指向该组。节点配置示例：
 
 ```yaml
 proxies:

@@ -123,7 +123,7 @@ flowchart TD
 3. **低倍率节点** — 匹配 `LOW_COST_NODE_MATCHER` 的节点归入低价策略组，供用户按需选用。
 4. **高倍率节点** — 匹配 `HIGH_COST_NODE_MATCHER` 的节点单独归类；低倍率匹配优先，避免重复归类。
 5. **小地区** — `lite-combine` 阈值内的地区节点合并进「其他节点」，其余地区继续生成地区组。
-6. **Tailscale** — `type: "tailscale"` 的节点单独归入 Tailscale 代理组；只有检测到此类节点时才生成该组及对应的规则。
+6. **Tailscale** — `type: "tailscale"` 的节点单独归入 Tailscale 代理组；只有检测到此类节点时才生成该组及对应的 IP 网段规则。
 
 这些分类维度相互独立，构建阶段通过组合它们来生成完整的代理组树。
 
@@ -133,10 +133,12 @@ flowchart TD
 
 ### Tailscale 集成
 
+`ts.net` 及其子域名始终优先走 `DIRECT`，不受全局 QUIC 拦截规则影响。DNS 查询直连本机的 MagicDNS（`100.100.100.100`），fake-ip 模式下也返回真实地址。此路径需要运行 Mihomo 的设备能访问 Tailscale 的本地解析器。
+
 当订阅中存在 `type: "tailscale"` 的节点时，脚本会：
 
 - 创建只包含 Tailscale 节点的「Tailscale」代理组；
-- 为 `100.64.0.0/10`、`fd7a:115c:a1e0::/48` 和 `ts.net` 添加定向分流规则；
+- 为 `100.64.0.0/10`、`fd7a:115c:a1e0::/48` 添加指向该代理组的 IP 网段规则；
 - Tailscale 存在时不排除对应地址段，使其能够交由 Tailscale 代理组处理；不存在时则排除这些地址段，避免无效的路由进入 TUN。
 
 没有 Tailscale 节点时，上述代理组和分流规则不会生成；TUN 仍输出统一的基础配置，并额外排除 Tailscale 地址段与本地网络地址段。`route-exclude-address` 始终包含 `10.0.0.0/8`、`172.16.0.0/12`、`192.168.0.0/16`、`169.254.0.0/16`、`224.0.0.0/4`、`255.255.255.255/32`、`fe80::/10` 与 `ff00::/8`，覆盖 LocalSend、mDNS、SSDP/DLNA 等局域网发现所需的单播、组播与广播地址族。无 Tailscale 节点时还会排除 `fc00::/7`；存在 Tailscale 节点时不整体排除 ULA，以免 `fd7a:115c:a1e0::/48` 流量绕过 TUN。
@@ -165,7 +167,8 @@ flowchart TD
 脚本不会无条件覆盖上游配置的全部字段：
 
 - 始终保留上游 `hosts`；
-- 在生成 DNS 配置后，合并上游的 `nameserver-policy`、`proxy-server-nameserver-policy` 和 `fake-ip-filter`；
+- 在生成 DNS 配置后，合并上游的 `nameserver-policy`、`proxy-server-nameserver-policy` 和 `fake-ip-filter`；同名的 DNS 策略项以内置值为准；
+- `DIRECT` 出站的域名解析也遵循 `nameserver-policy`，未命中时仍使用 `direct-nameserver`；
 - 脚本生成的 DNS 核心设置保持优先级。内部 DNS 保持启用，默认不设置 `dns.listen`。解析请求遵循分流规则，`nameserver` 使用 Cloudflare 和 Google 的 DoH 服务。
 
 这样既能维持脚本的统一 DNS 行为，也能保留订阅提供方针对特定域名的策略。
