@@ -16,6 +16,7 @@ describe("buildDns", () => {
             "*.lan",
             "*.local",
             "*.arpa",
+            "+.ts.net",
             "time.*.com",
             "ntp.*.com",
             "+.market.xiaomi.com",
@@ -40,7 +41,15 @@ describe("buildDns", () => {
         assert.equal(dns["fake-ip-filter"], undefined);
     });
 
-    it("继承上游 nameserver-policy 与 fake-ip-filter", () => {
+    it("两种 DNS 模式下均通过直连 MagicDNS 解析 ts.net", () => {
+        for (const fakeIPEnabled of [true, false]) {
+            const dns = buildDns({ fakeIPEnabled, ipv6Enabled: false });
+            assert.equal(dns["nameserver-policy"]?.["+.ts.net"], "udp://100.100.100.100#DIRECT");
+            assert.equal(dns["direct-nameserver-follow-policy"], true);
+        }
+    });
+
+    it("继承其他上游 DNS 策略与 fake-ip-filter，不覆盖内置的同名策略", () => {
         const dns = buildDns({
             fakeIPEnabled: true,
             ipv6Enabled: false,
@@ -51,11 +60,19 @@ describe("buildDns", () => {
                 "enhanced-mode": "fake-ip",
                 nameserver: [],
                 fallback: [],
-                "nameserver-policy": { "geosite:cn": ["223.5.5.5"] },
+                "nameserver-policy": {
+                    "geosite:cn": ["223.5.5.5"],
+                    "+.ts.net": "8.8.8.8",
+                },
+                "proxy-server-nameserver-policy": { "node.example.org": "1.1.1.1" },
                 "fake-ip-filter": ["+.example.org"],
             },
         });
-        assert.deepEqual(dns["nameserver-policy"], { "geosite:cn": ["223.5.5.5"] });
+        assert.deepEqual(Object.entries(dns["nameserver-policy"] ?? {}), [
+            ["+.ts.net", "udp://100.100.100.100#DIRECT"],
+            ["geosite:cn", ["223.5.5.5"]],
+        ]);
+        assert.deepEqual(dns["proxy-server-nameserver-policy"], { "node.example.org": "1.1.1.1" });
         assert.ok(dns["fake-ip-filter"]?.includes("+.example.org"));
     });
 

@@ -17,14 +17,14 @@ export interface BuildRulesInput {
 /**
  * 构建最终的规则列表。
  * @param input.quicEnabled - 是否允许 QUIC（未启用时插入 UDP:443 拦截规则）
- * @param input.hasTailscale - 是否存在 Tailscale 节点（决定是否生成 Tailscale 分流规则）
+ * @param input.hasTailscale - 是否存在 Tailscale 节点（决定是否生成 Tailscale IP 段分流规则）
  */
 export function buildRules({ quicEnabled, hasTailscale }: BuildRulesInput): string[] {
     return [
+        `DOMAIN-SUFFIX,ts.net,DIRECT`,
         !quicEnabled ? `AND,((DST-PORT,443),(NETWORK,UDP)),REJECT` : null,
         hasTailscale ? `IP-CIDR,100.64.0.0/10,${PROXY_GROUPS.TAILSCALE},no-resolve` : null,
         hasTailscale ? `IP-CIDR,fd7a:115c:a1e0::/48,${PROXY_GROUPS.TAILSCALE},no-resolve` : null,
-        hasTailscale ? `DOMAIN-SUFFIX,ts.net,${PROXY_GROUPS.TAILSCALE}` : null,
         `GEOIP,private,DIRECT,no-resolve`,
         ruleSet("SogouInput", PROXY_GROUPS.SOGOU_INPUT),
         ruleSet("ADBlock", PROXY_GROUPS.AD_BLOCK),

@@ -11,6 +11,7 @@ const FAKE_IP_FILTER = [
     "*.lan",
     "*.local",
     "*.arpa",
+    "+.ts.net",
     "time.*.com",
     "ntp.*.com",
     "+.market.xiaomi.com",
@@ -42,23 +43,25 @@ function mergeStringLists(current: string[] | undefined, upstream: unknown): str
     return [...new Set([...(current ?? []), ...(upstreamList ?? [])])];
 }
 
-/** 合并 DNS Policy，仅保留 Clash 支持的字符串或字符串数组值。 */
+/** 合并合法的上游 DNS Policy，保留已有策略及其优先顺序。 */
 function mergeDnsPolicies(
     current: Record<string, DnsPolicyValue> | undefined,
     upstream: unknown
 ): Record<string, DnsPolicyValue> | undefined {
     if (!isRecord(upstream)) return current;
 
-    const upstreamPolicy: Record<string, DnsPolicyValue> = {};
+    const policy = { ...current };
     for (const [key, value] of Object.entries(upstream)) {
+        if (Object.hasOwn(policy, key)) continue;
         if (typeof value === "string") {
-            upstreamPolicy[key] = value;
-        } else if (getStringList(value)) {
-            upstreamPolicy[key] = value as string[];
+            policy[key] = value;
+        } else {
+            const servers = getStringList(value);
+            if (servers) policy[key] = servers;
         }
     }
 
-    return { ...(current ?? {}), ...upstreamPolicy };
+    return policy;
 }
 
 /** 仅合并允许继承的上游 DNS 字段，同时保留脚本控制字段的优先级。 */
@@ -107,8 +110,8 @@ export function buildDns({ fakeIPEnabled, ipv6Enabled, upstreamDns }: BuildDnsIn
         ipv6: ipv6Enabled,
         "default-nameserver": ["tls://223.5.5.5", "tls://223.6.6.6"],
         nameserver: ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"],
-        "nameserver-policy": {},
-        "direct-nameserver-follow-policy": false,
+        "nameserver-policy": { "+.ts.net": "udp://100.100.100.100#DIRECT" },
+        "direct-nameserver-follow-policy": true,
         "fallback-filter": {
             geoip: true,
             "geoip-code": "CN",

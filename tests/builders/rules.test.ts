@@ -5,9 +5,12 @@ import { buildRules } from "../../src/builders/rules";
 import { ruleSets } from "../../src/catalog/rule-sets";
 
 describe("buildRules", () => {
-    it("未启用 quic 时插入 UDP 443 拦截规则", () => {
+    it("未启用 quic 时在 ts.net 直连规则后插入 UDP 443 拦截规则", () => {
         const rules = buildRules({ quicEnabled: false, hasTailscale: false });
-        assert.equal(rules[0], "AND,((DST-PORT,443),(NETWORK,UDP)),REJECT");
+        assert.deepEqual(rules.slice(0, 2), [
+            "DOMAIN-SUFFIX,ts.net,DIRECT",
+            "AND,((DST-PORT,443),(NETWORK,UDP)),REJECT",
+        ]);
     });
 
     it("启用 quic 时不插入拦截规则", () => {
@@ -45,10 +48,15 @@ describe("buildRules", () => {
         }
     });
 
-    it("Tailscale 存在时生成对应分流规则", () => {
+    it("有 Tailscale 节点时仍优先直连 ts.net，保留 Tailscale 地址段分流", () => {
         const rules = buildRules({ quicEnabled: true, hasTailscale: true });
+        assert.deepEqual(
+            rules.filter((rule) => rule.startsWith("DOMAIN-SUFFIX,ts.net,")),
+            ["DOMAIN-SUFFIX,ts.net,DIRECT"]
+        );
+        assert.equal(rules[0], "DOMAIN-SUFFIX,ts.net,DIRECT");
         assert.ok(rules.includes("IP-CIDR,100.64.0.0/10,Tailscale,no-resolve"));
-        assert.ok(rules.includes("DOMAIN-SUFFIX,ts.net,Tailscale"));
+        assert.ok(rules.includes("IP-CIDR,fd7a:115c:a1e0::/48,Tailscale,no-resolve"));
     });
 
     it("Tailscale 不存在时不生成对应分流规则", () => {
