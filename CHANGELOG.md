@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.8.2](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.8.1...src-v2.8.2) (2026-11-27)
+
+### Bug Fixes
+
+- `ts.net` 及其子域名通过本机的 Tailscale MagicDNS（`100.100.100.100`）解析并直连，需在运行 Mihomo 的设备上连接 Tailscale。([de79b7a](https://github.com/ChenXiaoming233/override-rules/commit/de79b7adb5eb2be97450064a62c0d8fd14f83934))
+
+### Documentation
+
+- 补充 MagicDNS 的使用条件，说明域名直连与 Tailscale IP 网段分流的区别。([acc0900](https://github.com/ChenXiaoming233/override-rules/commit/acc0900872bbd80d31f5feb96ba95ba57459867d))
+
 ## [2.8.1](https://github.com/ChenXiaoming233/override-rules/compare/src-v2.8.0...src-v2.8.1) (2026-11-23)
 
 ### Bug Fixes
